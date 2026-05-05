@@ -1,0 +1,53 @@
+#myModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    backdrop-filter: blur(10px);          /* Blurs content behind this div */
+    -webkit-backdrop-filter: blur(10px);  /* Required for Safari support */
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.overduetimer {
+    border-radius: 20px;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(35, 40, 58, 0.65);
+    border: 2px solid rgba(58, 122, 254, 0.3);
+    text-align: center;
+    color: #f3f3f3;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.overduetimer h1 {
+    font-size: 150px;
+    margin-bottom: 20px;
+}
+
+.overduetimer h2 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.timer-display {
+    font-size: 40px;
+    margin-bottom: 20px;
+    font-family: monospace;
+}
+
+.overduetimer .timer-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

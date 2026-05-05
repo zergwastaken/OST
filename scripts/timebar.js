@@ -5,5 +5,6 @@ function updateTimeBar() {
     document.getElementById('localTime').textContent = local;
     document.getElementById('zuluTime').textContent = zulu;
 }
+
 updateTimeBar();
 setInterval(updateTimeBar, 1000);

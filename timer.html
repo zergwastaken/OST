@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS TOOLS - Home</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+<body style="padding-top: 100px;">
+    <header class="nav-header">
+        <a class="nav-brand" href="index.html">
+            <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
+            <span class="nav-title">Operations Specialist Tools</span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
+            <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
+            <!-- <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a> -->
+            <!-- <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a> -->
+        </nav>
+    </header>
+    
+    <main id="main">
+        <h1 class="home-title">MULTI TIMER</h1>
+        <p class="home-subtitle">Track multiple operations simultaneously with our Multi Timer tool.</p>
+        <div class="preset-btns">
+            <button class="btn preset-btn" onclick="presetTimer(1)">
+                <h3>🚢 Cutter Timer</h3>
+                <p>(4 hours)</p>
+            </button>
+            <button class="btn preset-btn" onclick="presetTimer(2)">
+                <h3>✈️ Fixed Wing Timer</h3>
+                <p>(30 minutes)</p>
+            </button>
+            <button class="btn preset-btn" onclick="presetTimer(3)">
+                <h3>🚤 Small Boat Timer</h3>
+                <p>(30 Minutes)</p>
+            </button>
+            <button class="btn preset-btn" onclick="presetTimer(4)">
+                <h3>🚁 Rotary Wing Timer</h3>
+                <p>(15 minutes)</p>
+            </button>
+            <button class="btn preset-btn" onclick="createCustmomTimer()">
+                <h3>⏲️ Custom Timer</h3>
+                <p>(Set Duration)</p>
+            </button>
+        </div>
+        <div id="timers-container">
+            <!-- <div class="timer-card">
+                <h1>⏲️</h1>
+                <h2>Timer 1</h2>
+                <h2 class="timer-display">00:00:00</h2>
+                <div class="timer-controls">
+                    <button class="btn start-btn" data-timer="1">Start</button>
+                    <button class="btn reset-btn" data-timer="1">Reset</button>
+                    <button class="btn remove-btn" data-timer="1">Remove</button>
+                </div>
+            </div> -->
+        </div>
+    </main>
+
+    <button id="myBtn">Open Modal</button>
+
+    <div id="myModal">
+        
+        <div class="overduetimer">
+            <h1>⏲️</h1>
+            <h2>Timer 1</h2>
+            <h2 class="timer-display">00:00:00</h2>
+            <div class="timer-controls">
+                <button class="btn start-btn" data-timer="1">Restart</button>
+                <button class="btn reset-btn" data-timer="1">Reset</button>
+                <button class="btn remove-btn" data-timer="1">Remove</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="scripts/modal.js"></script>
+    <script src="scripts/timer.js"></script>
+    <script src="scripts/timebar.js"></script>
+</body>
+</html>
