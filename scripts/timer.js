@@ -1,5 +1,4 @@
 let timers = []
-let pastDueTimers = []
 
 let emojiOptions = [
     "⛴️",
@@ -11,7 +10,61 @@ let emojiOptions = [
 
 let timersContainer = document.getElementById('timers-container');
 
-function createCustmomTimer() {
+function checkExpiredTimers() {
+    const now = Date.now();
+    let expiredTimers = [];
+
+    for (let i = 0; i < timers.length; i++) {
+        let timer = timers[i];
+        if (!timer.paused && timer.endTime && timer.endTime <= now) {
+            timer.paused = true;
+            timer.expiredAt = now;
+            timer.endTime = null;
+            timer.expired = true; // Mark as expired
+            expiredTimers.push(timer);
+            // timers.splice(i, 1); // Remove from active timers
+            generateModal(expiredTimers);
+            renderTimers();
+            console.log("Timer expired:", timer);
+            i--; // Adjust index
+        }
+    }
+}
+
+function saveLocal(){
+    localStorage.setItem('timers', JSON.stringify(timers));
+}
+
+function loadLocal(){
+    const storedTimers = localStorage.getItem('timers');
+    if (storedTimers) {
+        timers = JSON.parse(storedTimers);
+        // Handle timers that were running when saved
+        const now = Date.now();
+        timers.forEach(timer => {
+            if (!timer.paused && timer.endTime && timer.endTime <= now) {
+                // Timer has expired while away, mark expired and stop it
+                timer.expired = true;
+                console.log("Timer expired while offline:", timer);
+                timer.endTime = null;
+                timer.paused = true;
+            }
+
+            // If a timer was saved as paused but still has an endTime, convert that
+            // into a preserved `time` (seconds) and clear endTime so it doesn't keep ticking
+            if (timer.paused && timer.endTime) {
+                const remainingMs = Math.max(0, timer.endTime - now);
+                timer.time = Math.ceil(remainingMs / 1000);
+                timer.endTime = null;
+            }
+        });
+        renderTimers();
+    }
+}
+
+loadLocal()
+
+function createCustomTimer() {
     let timerName = prompt("Enter a name for your timer:");
     let timerEmoji = prompt("Enter an emoji for your timer:");
     let timerTime = parseInt(prompt("Enter the duration for your timer (in seconds):"));
@@ -22,8 +75,12 @@ function createCustmomTimer() {
 }
 
 function createNewTimer( nm, e, t){
-    timers.push ({name: nm, emoji: e, time: t, timeleft: t, paused: false, timerid: Date.now()});
+    timers.push ( {name: nm, emoji: e, time: t, endTime: null, paused: true, timerid: Date.now()} );
+    currentTimer = timers[timers.length - 1];
+
     renderTimers(); 
+    toggleTimer(currentTimer);
+    console.log(timers);
 }
 
 function presetTimer(preset) {
@@ -39,10 +96,20 @@ function presetTimer(preset) {
 }
 
 function toggleTimer(currentTimer){
-    if (currentTimer.paused) {
+    if (currentTimer.expired) {
+        // Starting for the first time
+        const remainingTime = currentTimer.endTime ? Math.max(0, currentTimer.endTime - Date.now()) : currentTimer.time * 1000;
+        currentTimer.expired = false;
+        currentTimer.endTime = Date.now() + remainingTime;
         currentTimer.paused = false;
         currentTimer.toggleButtonElement.textContent = "Pause";
-    } else{
+    } else if (currentTimer.paused) {
+        // Starting/resuming the timer
+        const remainingTime = currentTimer.endTime ? Math.max(0, currentTimer.endTime - Date.now()) : currentTimer.time * 1000;
+        currentTimer.endTime = Date.now() + remainingTime;
+        currentTimer.paused = false;
+        currentTimer.toggleButtonElement.textContent = "Pause";
+    } else {
         currentTimer.paused = true;
         currentTimer.toggleButtonElement.textContent = "Start";
     }
@@ -50,19 +117,29 @@ function toggleTimer(currentTimer){
 }
 
 function resetTimer(currentTimer){
-    currentTimer.timeleft = currentTimer.time
+    // const remainingTime = currentTimer.endTime ? Math.max(0, currentTimer.endTime - Date.now()) : currentTimer.time * 1000;
+    currentTimer.expired = false;
+    currentTimer.endTime = null;
+    currentTimer.paused = true;
     renderTimers()
 }
 
 function sortTimers() {
-    const sortByTime = (a, b) => a.timeleft - b.timeleft;
+    const getRemainingTime = (timer) => {
+        if (timer.paused) {
+            return timer.endTime ? Math.max(0, timer.endTime - Date.now()) : timer.time * 1000;
+        } else {
+            return Math.max(0, timer.endTime - Date.now());
+        }
+    };
+
+    const sortByTime = (a, b) => getRemainingTime(a) - getRemainingTime(b);
 
     const active = timers.filter(t => !t.paused).sort(sortByTime);
     const paused = timers.filter(t => t.paused).sort(sortByTime);
 
     return [...active, ...paused];
 }
-
 
 function removeTimer(currentTimer){
     let index = timers.findIndex(t => t.timerid === currentTimer.timerid);
@@ -76,7 +153,7 @@ function removeTimer(currentTimer){
 }
 
 let lastTimestamp = 0;
-let accumulator = 0;
+// let accumulator = 0;
 
 function timerLoop(timestamp) {
     // Initialize lastTimestamp on the first execution
@@ -87,26 +164,29 @@ function timerLoop(timestamp) {
     lastTimestamp = timestamp;
 
     // Accumulate time only if timers aren't globally paused
-    accumulator += deltaTime;
+    // accumulator += deltaTime;
 
     // Check if at least 1000ms (1 second) has passed
-    if (accumulator >= 1000) {
+    // if (accumulator >= 1000) {
         updateTimers();
+        saveLocal();
         // Reset accumulator but keep the remainder for precision
-        accumulator %= 1000;
-    }
-
+        // accumulator %= 1000;
+    // }
     requestAnimationFrame(timerLoop);
 }
 
 function updateTimers() {
+    if (timers.length === 0) return;
     for (let i = 0; i < timers.length; i++) {
         let currentTimer = timers[i];
-        if (!currentTimer.paused) {
-            currentTimer.timeleft -= 1;
-            currentTimer.timerTextElement.textContent = formatTime(currentTimer.timeleft);
+        if (!currentTimer.paused && currentTimer.endTime) {
+            const remainingMs = currentTimer.endTime - Date.now();
+            const timeleft = Math.max(0, Math.ceil(remainingMs / 1000));
+            currentTimer.timerTextElement.textContent = formatTime(timeleft);
         }
     }
+    checkExpiredTimers();
 }
 
 // Start the loop
@@ -228,7 +308,15 @@ function renderTimerCard( currentTimer ){
     const timerText = document.createElement("h2");
     timerText.classList.add("timer-text");
     currentTimer.timerTextElement = timerText;
-    timerText.textContent = formatTime(currentTimer.timeleft);
+    
+    // Calculate current timeleft
+    let timeleft;
+    if (currentTimer.paused) {
+        timeleft = currentTimer.endTime ? Math.max(0, Math.ceil((currentTimer.endTime - Date.now()) / 1000)) : currentTimer.time;
+    } else {
+        timeleft = currentTimer.endTime ? Math.max(0, Math.ceil((currentTimer.endTime - Date.now()) / 1000)) : 0;
+    }
+    timerText.textContent = formatTime(timeleft);
 
     const toggleButton = document.createElement("button");
     toggleButton.classList.add("btn");
@@ -285,7 +373,3 @@ function renderTimerCard( currentTimer ){
     buttonDiv.appendChild(resetButton);
     buttonDiv.appendChild(removeButton);
 }
-
-
-
-

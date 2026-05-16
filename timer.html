@@ -17,11 +17,8 @@
         <nav class="nav-links">
             <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
             <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
-            <!-- <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a> -->
-            <!-- <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a> -->
         </nav>
     </header>
-    
     <main id="main">
         <h1 class="home-title">MULTI TIMER</h1>
         <p class="home-subtitle">Track multiple operations simultaneously with our Multi Timer tool.</p>
@@ -42,11 +39,15 @@
                 <h3>🚁 Rotary Wing Timer</h3>
                 <p>(15 minutes)</p>
             </button>
-            <button class="btn preset-btn" onclick="createCustmomTimer()">
+            <button class="btn preset-btn" onclick="createCustomTimer()">
                 <h3>⏲️ Custom Timer</h3>
                 <p>(Set Duration)</p>
             </button>
         </div>
+        <!-- <div class="checklist-card">
+            <input type="checkbox" name="" id="" class="checkbox">
+            <p>START AT THE TOP OF THE MINUTE</p>
+        </div> -->
         <div id="timers-container">
             <!-- <div class="timer-card">
                 <h1>⏲️</h1>
@@ -62,9 +63,7 @@
     </main>
 
     <button id="myBtn">Open Modal</button>
-
     <div id="myModal">
-        
         <div class="overduetimer">
             <h1>⏲️</h1>
             <h2>Timer 1</h2>
@@ -75,10 +74,13 @@
                 <button class="btn remove-btn" data-timer="1">Remove</button>
             </div>
         </div>
-
     </div>
+    <!-- <footer class="main-footer">
+        <p>Made By OS3 D. GRINAGER</p>
+        <p>© 2026 Operations Specialist Tools. Licensed under the MIT License.</p>
+    </footer> -->
     <script src="scripts/modal.js"></script>
     <script src="scripts/timer.js"></script>
-    <script src="scripts/timebar.js"></script>
+    <!-- <script src="scripts/timebar.js"></script> -->
 </body>
 </html>
