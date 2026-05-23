@@ -3,13 +3,6 @@ let expiredTimers = [];
 // Get the modal
 const modal = document.getElementById("myModal");
 
-// Get the button that opens the modal
-const btn = document.getElementById("myBtn");
-
-// When the user clicks on the button, open the modal
-btn.onclick = function() {
-  	modal.style.display = "flex";
-}
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
@@ -19,18 +12,19 @@ window.onclick = function(event) {
 }
 
 var generateModal = function(array){
-    expiredTimers = array; // Update global expired timers array
-	modal.style.display = "flex";
+    const newTimers = array.filter(timer => !expiredTimers.some(existing => existing.timerid === timer.timerid));
+    expiredTimers = expiredTimers.concat(newTimers);
+    modal.style.display = "flex";
 	// Access the Timers Container Element
     modal.innerHTML = ''; // nuke everything
 
-    for (let i = 0; i < array.length; i++) {
-        let currentTimer = array[i];
+    for (let i = 0; i < expiredTimers.length; i++) {
+        let currentTimer = expiredTimers[i];
         createExpiredTimerCard(currentTimer);
     }
 
     // Hide container if no timers, show if timers exist
-    if (array.length === 0) {
+    if (expiredTimers.length === 0) {
         modal.style.display = 'none';
     } else {
         modal.style.display = 'flex';
@@ -129,9 +123,12 @@ function createExpiredTimerCard( currentTimer ){
         let index = expiredTimers.indexOf(currentTimer);
         if (index !== -1) {
             expiredTimers.splice(index, 1);
+            // Clear expired state and reset timer state so it persists
+            currentTimer.expired = false;
+            currentTimer.expiredAt = null; // Clear expired time
+            currentTimer.timeLeft = currentTimer.duration ?? currentTimer.time ?? 0;
             currentTimer.endTime = null;
             currentTimer.paused = true;
-            currentTimer.expiredAt = null; // Clear expired time
             // timers.push(currentTimer);
             modal.innerHTML = ''; // Clear modal
             if (expiredTimers.length > 0) {
@@ -140,6 +137,8 @@ function createExpiredTimerCard( currentTimer ){
                 modal.style.display = "none";
             }
             renderTimers();
+            // Persist the updated timers state so the reset survives a reload
+            if (typeof saveLocal === 'function') saveLocal();
         }
     });
 
@@ -158,6 +157,14 @@ function createExpiredTimerCard( currentTimer ){
             } else {
                 modal.style.display = "none";
             }
+            // Also remove from the main timers list if present and persist
+            if (typeof timers !== 'undefined') {
+                const mainIndex = timers.findIndex(t => t.timerid === currentTimer.timerid);
+                if (mainIndex !== -1) timers.splice(mainIndex, 1);
+            }
+            if (typeof saveLocal === 'function') saveLocal();
+            // Update main UI so removal is immediately visible
+            if (typeof renderTimers === 'function') renderTimers();
         }
     });
 

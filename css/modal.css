@@ -1,3 +1,24 @@
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background: red;
+    }
+    25% {
+        background: rgb(122, 0, 0);
+    }
+    50% {
+        transform: scale(1.05);
+        background: red;
+    }
+    75% {
+        background: rgb(122, 0, 0);
+    }
+    100% {
+        transform: scale(1);
+        background: red;
+    }
+}
+
 #myModal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -11,11 +32,17 @@
     -webkit-backdrop-filter: blur(10px);  /* Required for Safari support */
     justify-content: center;
     align-items: center;
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 10px;
+    animation: pulse 4s ease-in-out infinite;
+    box-sizing: border-box;
+    padding: 150px;
 }
 
 .overduetimer {
+    width: 350px;
+    height: 600px;
     border-radius: 20px;
     padding: 50px;
     display: flex;
