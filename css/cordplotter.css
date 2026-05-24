@@ -1,0 +1,49 @@
+:root {
+    --navy-dark: rgba(10, 25, 47, 0.95);
+    --navy-blue: rgba(23, 42, 69, 0.9);
+    --cg-orange: white;
+    --text-light: #F4F6F9;
+    --text-muted: #8892B0;
+    --border-color: #233554;
+    --success-green: #4CAF50;
+}
+
+.leaflet-control-attribution {
+    display: none !important;
+}
+
+body { margin: 0; padding: 0; font-family: sans-serif; color: var(--text-light); overflow: hidden; }
+#map { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; cursor: crosshair; }
+
+.converter-container {
+    position: absolute;
+    top: 120px;
+    left: 20px;
+    z-index: 1000;
+    background-color: var(--navy-dark);
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--cg-orange);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    width: 450px;
+    padding: 25px;
+    backdrop-filter: blur(5px);
+}
+
+.header h1 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: var(--cg-orange); }
+.header p { margin: 5px 0 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); }
+
+.input-row { display: flex; gap: 8px; }
+input, select { background-color: var(--navy-blue); border: 1px solid var(--border-color); color: var(--text-light); padding: 10px; border-radius: 4px; font-size: 1rem; width: 100%; }
+input:focus { outline: none; border-color: var(--cg-orange); }
+
+.results-section { margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px; }
+.result-box { background-color: var(--navy-blue); border-left: 3px solid var(--cg-orange); padding: 10px; border-radius: 0 4px 4px 0; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.result-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+.result-value { font-family: monospace; font-size: 1rem; font-weight: bold; }
+
+.btn-copy { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; }
+.instruction-box { font-size: 0.75rem; color: var(--cg-orange); background: rgba(255,59,0,0.1); padding: 8px; border-radius: 4px; margin-bottom: 15px; text-align: center; border: 1px dashed var(--cg-orange); }
