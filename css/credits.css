@@ -58,10 +58,10 @@ tr:last-child td {
     font-size: 0.8rem;
 }
 
-.footer {
+footer {
     text-align: center;
-    margin-top: 20px;
     color: var(--text-muted);
     font-size: 0.8rem;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
