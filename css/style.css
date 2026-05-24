@@ -146,6 +146,7 @@ input[type="number"] {
     
 /* ==================== HOME PAGE STYLES ==================== */
 .home-main {
+  margin-top: 100px;
     max-width: 1200px;
     padding: 0 20px;
     width: 100%;
@@ -436,9 +437,8 @@ input[type="number"] {
     align-items: center;
     justify-content: center;
     letter-spacing: 0.5px;
+    margin-top: 100px;
     margin-bottom: 20px;
-    position: absolute;
-    bottom: 0;
 }
 
 .main-footer p {
