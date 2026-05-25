@@ -2,10 +2,8 @@
 
 ### Features
 * multi timer
-* templates
-* fun facts
-* mini games
-* much more coming soon 
+* cordinate plotter
+* mini games coming soon
 
 _made by **OS3 GRINAGER**_
 
