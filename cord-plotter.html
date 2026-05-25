@@ -118,9 +118,25 @@
     </div>
 </div>
 
+<!-- PouchDB and Leaflet Caching Plugin -->
+<script src="https://unpkg.com/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+<script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@1.0.0/L.TileLayer.PouchDBCached.js"></script>
+
 <script>
     const map = L.map('map', { zoomControl: false }).setView([39.8, -98.5], 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    // --- OPTIMIZED & CACHED TILE LAYER ---
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        keepBuffer: 4,               // Preloads tiles outside the immediate view
+        updateWhenIdle: false,       // Continues loading during active pans
+        updateInterval: 150,         // Speeds up tile requests during pan
+
+        // Cache Settings:
+        useCache: true,              // Saves loaded tiles to the local database
+        crossOrigin: true,           // Required to avoid CORS issues when saving tiles
+        cacheMaxAge: 1000*60*60*24*7 // Keeps cached tiles valid for 7 days (in milliseconds)
+    }).addTo(map);
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     let marker = null;
 
