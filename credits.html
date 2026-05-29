@@ -6,21 +6,14 @@
     <title>OS Tools - Credits & Updates</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/credits.css">
+    <!-- Scripts -->
+    <script src="scripts/header-footer.js" defer></script>
+    <script src="scripts/credits.js" defer></script>
 </head>
 <body>
-    <header class="nav-header">
-        <a class="nav-brand" href="index.html">
-            <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
-            <span class="nav-title">Operations Specialist Tools</span>
-        </a>
-        <nav class="nav-links">
-            <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
-            <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
-            <a href="cord-plotter.html" class="nav-link"><span class="nav-icon">📌</span><span class="nav-text">Cordinate Plotter</span></a>
-        </nav>
-    </header>
     <div class="container">
         <h1 class="home-title">CREDITS & UPDATES</h1>
+        
         <h2>🛠️ Development Credits</h2>
         <table>
             <thead>
@@ -30,51 +23,11 @@
                     <th>Focus Area</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td><b>Project Lead</b></td>
-                    <td>OS3 Grinager</td>
-                    <td>Systems Architecture & Code Development</td>
-                </tr>
-                <tr>
-                    <td><b>Data Entry</b></td>
-                    <td>OS3 Villanueva</td>
-                    <td>Being a CHAD and creating cheat sheet data for the website.</td>
-                </tr>
-                <tr>
-                    <td><b>Just Goated</b></td>
-                    <td>OS3 Vargas</td>
-                    <td>Gets hit by cars; still comes into watch.</td>
-                </tr>
-                <tr>
-                    <td><b>Field Testing</b></td>
-                    <td>Aux Shushan, Laurence</td>
-                    <td>Reporting issues & grammar corrections <br> ("BTW we generally refer to a helicopter as a helo rather than heli")</td>
-                </tr>
-                <tr>
-                    <td><b>Beta Testing</b></td>
-                    <td>USCG Sector San Diego JHOC</td>
-                    <td>Reporting bugs & giving meaningful feedback</td>
-                </tr>
-                <tr>
-                    <td><b>Beta Testing</b></td>
-                    <td>OS Class 05-26</td>
-                    <td>Class overall helped with the website.</td>
-                </tr>
-                <tr>
-                    <td><b>AI Integration</b></td>
-                    <td>Gemini Enterprise</td>
-                    <td>Technical Optimization</td>
-                </tr>
-                <tr>
-                    <td><b>Map Data</b></td>
-                    <td>OpenStreetMap / Leaflet</td>
-                    <td>Geospatial Visualization Engine</td>
-                </tr>
+            <tbody id="credits-tbody">
+                <!-- Dynamically populated by credits.js -->
             </tbody>
         </table>
 
-        
         <h2>🚀 System Update Log</h2>
         <table>
             <thead>
@@ -85,31 +38,14 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>24MAY26</td>
-                    <td><span class="version-tag">v1.2.0</span></td>
-                    <td><b>Cordinate Plotter / Credits Page:</b> Added Leaflet.js map integration with click-to-capture coordinate functionality and also added a credits page / update log.</td>
-                    <td>Active</td>
-                </tr>
-                <tr>
-                    <td>30NOV25</td>
-                    <td><span class="version-tag">v1.1.0</span></td>
-                    <td><b>Flash Cards & Map:</b> Added flash cards & map quiz.</td>
-                    <td>Superseded</td>
-                </tr>
-                <tr>
-                    <td>25NOV25</td>
-                    <td><span class="version-tag">v1.0.0</span></td>
-                    <td><b>Multi-Timer Tool:</b> Launched core timer utility for tracking comms checks and asset endurance.</td>
-                    <td>Superseded</td>
-                </tr>
+            <tbody id="updates-tbody">
+                <!-- Dynamically populated by credits.js -->
             </tbody>
         </table>
     </div>
-
+    
     <footer>
-        if you would also like to contriubte to this and end up on the developement credits feel free to teams me feedback and or suggestions @ os3 grinager
+        If you would also like to contribute to this and end up on the development credits, feel free to Teams me feedback and/or suggestions @ OS3 Grinager
     </footer>
 </body>
 </html>
