@@ -1,0 +1,148 @@
+:root {
+    --border-color: #aab;
+    --header-bg: #f0f2f5;
+    --text-color: #2c3e50;
+    --navy-blue: #002D62;
+    --category-bg: #e2e8f0;
+}
+body {
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+    margin: 0;
+
+}
+
+.log-sheet-container {
+    width: 100%;
+    max-width: 950px;
+    background: #ffffff;
+    border: 2px solid #000;
+    padding: 20px;
+    margin-top: 120px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+.department-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.log-title {
+    margin: 0;
+    font-size: 1.5rem;
+}
+.metadata-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #000;
+    font-size: 0.9rem;
+}
+.search-container {
+    margin-top: 15px;
+}
+
+.search-bar,
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="time"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: rgba(252, 252, 252, 0.85);
+    color: #000000;
+    border: 1.5px solid #3a7afe;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 1.08rem;
+    outline: none;
+    transition: border 0.18s, box-shadow 0.18s;
+    margin-bottom: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    table-layout: fixed; /* Helps enforce column widths for wrapping */
+}
+.log-table th, .log-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px 10px;
+    vertical-align: middle;
+}
+.log-table th {
+    background-color: var(--header-bg);
+    text-align: center;
+    font-weight: bold;
+}
+/* Style for the category separator rows */
+.category-row td {
+    background-color: var(--category-bg);
+    color: var(--navy-blue);
+    font-weight: bold;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-top: 2px solid var(--navy-blue);
+    padding: 6px 10px;
+}
+.entries-col { width: 70%; }
+.freq-col    { width: 15%; }
+.time-col    { width: 15%; text-align: center;}
+
+.log-table td:nth-child(2),
+.log-table td:nth-child(3) {
+    text-align: center;
+}
+.entry-text {
+    font-family: monospace;
+    font-size: 0.95rem;
+    font-weight: bold;
+    /* CRITICAL: Preserves physical line breaks (\n) and forces long lines to wrap */
+    white-space: pre-wrap; 
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    display: block;
+}
+.tole-row {
+    background-color: #f8f9fa;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+}
+.copy-btn {
+    float: right;
+    padding: 4px 10px;
+    border: 1px solid var(--border-color);
+    background-color: #e9ecef;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--navy-blue);
+    margin-left: 10px;
+}
+.copy-btn:hover {
+    background-color: #d6d8db;
+}
+.copy-btn.copied {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
