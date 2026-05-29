@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <title>OS Tools - Resources</title>
+    <link rel="stylesheet" href="css/resources.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="scripts/header-footer.js" defer></script>
+
+    <div class="container">
+        <div class="home-hero">
+            <h1 class="home-title">RESOURCES & REFERENCES</h1>
+            <p class="home-subtitle">Links, Terminology, and Standardized Templates for the Watch Floor</p>
+        </div>
+
+        <!-- USEFUL LINKS SECTION -->
+        <h2 class="section-title">🔗 Useful Links & Weather</h2>
+        <div class="links-grid">
+            <a href="https://uscg.sharepoint-mil.us/sites/USCGPortalOnline" class="link-card" target="_blank">
+                <span class="link-title">CG Portal (Homeport)</span>
+                <span class="link-desc">Internal access to CG instructions, directives, and unit pages.</span>
+            </a>
+            <a href="https://www.weather.gov/marine/forecast" class="link-card" target="_blank">
+                <span class="link-title">NWS Marine Forecasts</span>
+                <span class="link-desc">National Weather Service Buoy real-time wind and wave data.</span>
+            </a>
+            <a href="https://www.marinetraffic.com/" class="link-card" target="_blank">
+                <span class="link-title">MarineTraffic (AIS)</span>
+                <span class="link-desc">Public Automatic Identification System for vessel tracking.</span>
+            </a>
+            <a href="https://hcm.direct-access.uscg.mil" class="link-card" target="_blank">
+                <span class="link-title">Direct Access</span>
+                <span class="link-desc">Leave requests, payslips, and personnel administration.</span>
+            </a>
+            <a href="template-log.html" class="link-card" target="">
+                <span class="link-title">COMMS Log Entries Examples</span>
+                <span class="link-desc">Communications Unit log entries that you can easily copy and paste.</span>
+            </a>
+            <a href="https://www.navcen.uscg.gov/us-vhf-channel-information" class="link-card" target="_blank">
+                <span class="link-title">Radio Frequencies</span>
+                <span class="link-desc">List of many frequencies used by uscg, ogas, and public.</span>
+            </a>
+            <a href="https://www.navcen.uscg.gov/rescue-21-distress-system-coverage" class="link-card" target="_blank">
+                <span class="link-title">R21 Navigation Center</span>
+                <span class="link-desc">Communications Unit log entries that you can easily copy and paste.</span>
+            </a>
+        </div>
+
+        <!-- SLANG / GOUGE SECTION -->
+        <h2 class="section-title">⚓ OS Terminology & Acronyms</h2>
+        <input type="text" id="slangSearch" class="search-box" placeholder="🔍 Search for an acronym or term (e.g., UMIB, LKP)..." oninput="filterSlang()">
+
+    <!-- Wrap your table in this new container div -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Acronym / Term</th>
+                    <th style="width: 80%;">Definition & Context</th>
+                </tr>
+            </thead>
+            <tbody id="slangTable">
+                <!-- JavaScript will populate rows here -->
+            </tbody>
+        </table>
+    </div>
+
+
+        <!-- TEMPLATES SECTION -->
+        <h2 class="section-title">📋 Copy-Paste Templates</h2>
+        <div class="template-grid">
+            
+            <!-- Leave Request Template -->
+            <div class="template-card">
+                <div class="template-header">
+                    <span class="template-title">Standard Leave Request Email</span>
+                    <button class="btn-copy" onclick="copyTemplate('tplLeave', this)">Copy</button>
+                </div>
+                <textarea id="tplLeave" readonly>
+    Subject: LEAVE REQUEST: [DD MMM] – [DD MMM] // [Your Last Name]
+
+    Chief [Name] and OS[Rank] [Name],
+
+    Good evening/morning.
+
+    I am requesting leave for the upcoming period from [Start Date, e.g., 03 JUL] to [End Date, e.g., 05 JUL].
+
+    I have submitted this request in Direct Access for your review. I have verified the current watch schedule to ensure there are no conflicts with my requested dates, and my collateral duties are up to date.
+
+    Thank you for your time and consideration.
+
+    Very Respectfully,
+
+    [Rank/Rate][Your Name]
+    
+                </textarea>
+            </div>
+
+            <!-- Watch Relief Template -->
+            <div class="template-card">
+                <div class="template-header">
+                    <span class="template-title">Passdown / Watch Relief Log</span>
+                    <button class="btn-copy" onclick="copyTemplate('tplRelief', this)">Copy</button>
+                </div>
+                <textarea id="tplRelief" readonly>
+    --- WATCH RELIEF PASSDOWN ---
+    Date/Time: [DD MMM YY] / [Time] Local
+    Relieving Watch: [Name]
+    Off-going Watch: [Name]
+
+    1. ACTIVE SAR CASES:
+    - [Case Name/Number] - [Status: e.g., SRU en route, Suspended]
+    - [Next Action/Comms Schedule]
+
+    2. ASSET STATUS:
+    - STA [Name]: [Boat #] Bravo / [Boat #] Charlie
+    - Air Station: [Helo #] B-0
+
+    3. WEATHER / NAV HAZARDS:
+    - Current Winds/Seas:
+    - Active Broadcasts (UMIB/SMIB):
+
+    4. PENDING TASKS:
+    - [e.g., Need to send SITREP ONE for Case X]
+    - [e.g., Update MISLE logs]
+                </textarea>
+            </div>
+
+        </div>
+    </div>
+
+<script src="scripts/resources.js"></script>
+<script src="json/acronyms.json"></script>
+</body>
+</html>

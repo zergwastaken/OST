@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USCG Communication Log Templates</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/template-log.css">
+</head>
+<body>
+    <script src="scripts/header-footer.js" defer></script>
+    <script src="scripts/template-log.js"></script>
+
+    <div class="log-sheet-container">
+        <header class="log-header">
+            <div class="department-info">
+                <span>O.S. DEPARTMENT OF OPERATIONS SPECIALIST TOOLS</span>
+                <span>O.S. PUDDLE PIRATE</span>
+            </div>
+            <h1 class="log-title">COMMUNICATION LOG</h1>
+        </header>
+
+        <section class="metadata-section">
+            <div><strong>UNIT:</strong> SECTOR VICE CITY / GTA VI</div>
+            <div><strong>GUARDING:</strong> 156.8/156.525</div>
+            <div><strong>DATE:</strong> <span id="current-date"></span></div>
+        </section>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search templates (e.g., 'MAYDAY', 'TIME TICK')...">
+        </div>
+        
+        <div>
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th class="entries-col">ENTRIES</th>
+                        <th class="freq-col">FREQUENCY</th>
+                        <th class="time-col">TIME</th>
+                    </tr>
+                </thead>
+                <tbody id="log-body">
+                    <!-- Templates will be added here via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

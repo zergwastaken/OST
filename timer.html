@@ -9,17 +9,7 @@
     <link rel="stylesheet" href="css/modal.css">
 </head>
 <body style="padding-top: 100px;">
-    <header class="nav-header">
-        <a class="nav-brand" href="index.html">
-            <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
-            <span class="nav-title">Operations Specialist Tools</span>
-        </a>
-        <nav class="nav-links">
-            <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
-            <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
-            <a href="cord-plotter.html" class="nav-link"><span class="nav-icon">📌</span><span class="nav-text">Cordinate Plotter</span></a>
-        </nav>
-    </header>
+    <script src="scripts/header-footer.js" defer></script>
     <main id="main">
         <h1 class="home-title">MULTI TIMER</h1>
         <p class="home-subtitle">Track multiple operations simultaneously with our Multi Timer tool.</p>
@@ -29,7 +19,7 @@
                 <p>(4 hours)</p>
             </button>
             <button class="btn preset-btn" onclick="presetTimer(2)">
-                <h3>✈️ Fixed Wing Timer</h3>
+                <h3>✈️ Fixed Wing Aircraft Timer</h3>
                 <p>(30 minutes)</p>
             </button>
             <button class="btn preset-btn" onclick="presetTimer(3)">
@@ -37,7 +27,7 @@
                 <p>(30 Minutes)</p>
             </button>
             <button class="btn preset-btn" onclick="presetTimer(4)">
-                <h3>🚁 Rotary Wing Timer</h3>
+                <h3>🚁 Rotary Aircraft Timer</h3>
                 <p>(15 minutes)</p>
             </button>
             <button class="btn preset-btn" onclick="createCustomTimer()">
@@ -72,8 +62,54 @@
         </div>
     </main>
 
+    <!-- Custom Timer Popup -->
+    <div id="customTimerModal" class="custom-modal" aria-hidden="true">
+        <div class="custom-modal-content">
+            <h2>Create Custom Timer</h2>
+            <div class="form-row">
+                <label for="customTimerName">Name</label>
+                <input id="customTimerName" type="text" maxlength="40" placeholder="Timer name">
+            </div>
+            <div class="form-row">
+                <label for="customTimerEmoji">Emoji</label>
+                <input id="customTimerEmoji" type="text" maxlength="2" placeholder="⏲️">
+            </div>
+            <div class="emoji-picker" id="customEmojiPicker"></div>
+            <div class="form-row time-inputs">
+                <div class="input-wrapper">
+                    <label for="customTimerHours">Hours</label>
+                    <div class="number-spinner">
+                        <button type="button" class="spinner-btn spinner-up" data-target="customTimerHours">▲</button>
+                        <input id="customTimerHours" type="number" min="0" value="0" placeholder="e.g. 1">
+                        <button type="button" class="spinner-btn spinner-down" data-target="customTimerHours">▼</button>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <label for="customTimerMinutes">Minutes</label>
+                    <div class="number-spinner">
+                        <button type="button" class="spinner-btn spinner-up" data-target="customTimerMinutes">▲</button>
+                        <input id="customTimerMinutes" type="number" min="0" value="0" placeholder="e.g. 30">
+                        <button type="button" class="spinner-btn spinner-down" data-target="customTimerMinutes">▼</button>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <label for="customTimerSeconds">Seconds</label>
+                    <div class="number-spinner">
+                        <button type="button" class="spinner-btn spinner-up" data-target="customTimerSeconds">▲</button>
+                        <input id="customTimerSeconds" type="number" min="0" max="59" value="0" placeholder="e.g. 00">
+                        <button type="button" class="spinner-btn spinner-down" data-target="customTimerSeconds">▼</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="createCustomTimerBtn" class="btn start-btn">Create</button>
+                <button id="cancelCustomTimerBtn" class="btn remove-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="myModal">
-        <div class="overduetimer">
+        <!-- <div class="overduetimer">
             <h1>⏲️</h1>
             <h2>Timer 1</h2>
             <h2 class="timer-display">00:00:00</h2>
@@ -82,53 +118,8 @@
                 <button class="btn reset-btn" data-timer="1">Reset</button>
                 <button class="btn remove-btn" data-timer="1">Remove</button>
             </div>
-        </div>
+        </div> -->
     </div>
-        <!-- Custom Timer Popup -->
-        <div id="customTimerModal" class="custom-modal" aria-hidden="true">
-            <div class="custom-modal-content">
-                <h2>Create Custom Timer</h2>
-                <div class="form-row">
-                    <label for="customTimerName">Name</label>
-                    <input id="customTimerName" type="text" maxlength="40" placeholder="Timer name">
-                </div>
-                <div class="form-row">
-                    <label for="customTimerEmoji">Emoji</label>
-                    <input id="customTimerEmoji" type="text" maxlength="2" placeholder="⏲️">
-                </div>
-                <div class="emoji-picker" id="customEmojiPicker"></div>
-                <div class="form-row time-inputs">
-                    <div class="input-wrapper">
-                        <label for="customTimerHours">Hours</label>
-                        <div class="number-spinner">
-                            <button type="button" class="spinner-btn spinner-up" data-target="customTimerHours">▲</button>
-                            <input id="customTimerHours" type="number" min="0" value="0" placeholder="e.g. 1">
-                            <button type="button" class="spinner-btn spinner-down" data-target="customTimerHours">▼</button>
-                        </div>
-                    </div>
-                    <div class="input-wrapper">
-                        <label for="customTimerMinutes">Minutes</label>
-                        <div class="number-spinner">
-                            <button type="button" class="spinner-btn spinner-up" data-target="customTimerMinutes">▲</button>
-                            <input id="customTimerMinutes" type="number" min="0" value="0" placeholder="e.g. 30">
-                            <button type="button" class="spinner-btn spinner-down" data-target="customTimerMinutes">▼</button>
-                        </div>
-                    </div>
-                    <div class="input-wrapper">
-                        <label for="customTimerSeconds">Seconds</label>
-                        <div class="number-spinner">
-                            <button type="button" class="spinner-btn spinner-up" data-target="customTimerSeconds">▲</button>
-                            <input id="customTimerSeconds" type="number" min="0" max="59" value="0" placeholder="e.g. 00">
-                            <button type="button" class="spinner-btn spinner-down" data-target="customTimerSeconds">▼</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button id="createCustomTimerBtn" class="btn start-btn">Create</button>
-                    <button id="cancelCustomTimerBtn" class="btn remove-btn">Cancel</button>
-                </div>
-            </div>
-        </div>
     <!-- <footer class="main-footer">
         <p>Made By OS3 D. GRINAGER</p>
         <p>© 2026 Operations Specialist Tools. Licensed under the MIT License.</p>
@@ -136,6 +127,7 @@
     <script src="scripts/modal.js"></script>
     <script src="scripts/timer.js"></script>
     <script src="scripts/refresh.js"></script>
+
     <!-- <script src="scripts/timebar.js"></script> -->
 </body>
 </html>

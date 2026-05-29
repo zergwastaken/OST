@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Tools - Combined SAR & LE Game</title>
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; cursor: default;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #011627;
+        }
+        #ocean {
+            position: relative; width: 100%; height: 100%;
+            background: #014f86;
+            transition: background 1s linear; 
+        }
+        
+        /* Tactical HUD */
+        #hud {
+            position: absolute; top: 20px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between; z-index: 50;
+            pointer-events: none;
+        }
+        .hud-card {
+            background: rgba(1, 22, 39, 0.95); border: 1px solid #00b4d8;
+            border-radius: 4px; padding: 10px 20px; color: #fff;
+            font-family: monospace; font-size: 18px;
+            transition: all 0.3s;
+        }
+        .highlight { color: #00f5d4; font-weight: bold; }
+
+        /* Flashing HUD during pursuit */
+        .hud-pursuit {
+            border-color: #ff3366 !important;
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+        }
+
+        /* Boat and Hazards */
+        .entity {
+            position: absolute; user-select: none; pointer-events: none;
+            transform: translate(-50%, -50%); z-index: 10;
+            font-size: 45px;
+        }
+        #player {
+            font-size: 60px; z-index: 30;
+            transition: transform 0.1s ease-out; 
+            display: none;
+        }
+
+        /* FIXED SIRENS: Re-layered explicitly outside the emoji container to prevent masking */
+        #sirens {
+            position: absolute; 
+            width: 140px; 
+            height: 140px;
+            border-radius: 50%; 
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            display: none;
+            z-index: 28; /* Layered explicitly below the player boat (z-index: 30) but above everything else */
+            animation: flashLights 0.2s infinite alternate;
+        }
+        @keyframes flashLights {
+            0% { 
+                box-shadow: 0 0 45px 25px rgba(255, 0, 50, 0.9); 
+                background-color: rgba(255, 0, 50, 0.25);
+            }
+            100% { 
+                box-shadow: 0 0 45px 25px rgba(0, 120, 255, 0.9); 
+                background-color: rgba(0, 120, 255, 0.25);
+            }
+        }
+
+        /* Whirlpool Animation */
+        .whirlpool {
+            font-size: 80px !important;
+            opacity: 0.7;
+            animation: spin 2.5s linear infinite;
+        }
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* Danger Line */
+        #dangerLine {
+            position: absolute; left: 0; width: 100%; height: 4px;
+            background: repeating-linear-gradient(90deg, #d32f2f, #d32f2f 10px, transparent 10px, transparent 20px);
+            z-index: 5; opacity: 0.5; display: none;
+        }
+        #dangerLabel {
+            position: absolute; right: 20px; transform: translateY(-25px);
+            color: #ff4d4d; font-family: monospace; font-size: 12px; font-weight: bold;
+        }
+
+        /* Screens */
+        .screen-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(1, 22, 39, 0.95); display: flex;
+            justify-content: center; align-items: center; z-index: 100;
+            color: white; padding: 20px;
+        }
+        .dialog-box {
+            background: #013a63; border: 3px solid #00b4d8;
+            border-radius: 12px; width: 100%; max-width: 650px;
+            padding: 30px; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
+        }
+        .dialog-box h1 { margin-top: 0; color: #00b4d8; text-transform: uppercase; letter-spacing: 2px;}
+        
+        /* Layout Grid */
+        .dashboard {
+            display: flex; gap: 20px; text-align: left; margin-top: 20px;
+        }
+        .panel {
+            flex: 1; background: rgba(0,0,0,0.35); padding: 15px; border-radius: 8px;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        .leaderboard-list {
+            list-style: none; padding: 0; margin: 0; font-family: monospace; font-size: 15px;
+        }
+        .leaderboard-list li {
+            display: flex; justify-content: space-between;
+            padding: 5px 0; border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+        }
+        .leaderboard-list li span:last-child { color: #00f5d4; font-weight: bold; }
+
+        /* Buttons & Inputs */
+        .btn {
+            background: #00b4d8; border: none; padding: 15px 40px;
+            color: #011627; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; border-radius: 6px; font-size: 18px;
+            margin-top: 20px; transition: 0.2s; width: 100%;
+        }
+        .btn:hover { background: #00f5d4; transform: scale(1.02); }
+        .btn-secondary { background: #5c6bc0; color: white; }
+        .btn-secondary:hover { background: #7986cb; }
+
+        input[type="text"] {
+            width: 100%; padding: 12px; font-size: 18px; font-family: monospace;
+            border: 2px solid #00f5d4; border-radius: 6px; background: rgba(0,0,0,0.5);
+            color: white; text-align: center; margin-top: 10px; text-transform: uppercase;
+        }
+        input[type="text"]:focus { outline: none; box-shadow: 0 0 10px #00f5d4; }
+
+        /* Sinking Effect */
+        .sinking {
+            transition: top 2s ease-in, opacity 2s ease-in !important;
+            top: 120% !important; opacity: 0 !important;
+        }
+    </style>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header id="headerNav" class="nav-header">
+        <a class="nav-brand" href="index.html">
+            <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
+            <span class="nav-title">Operations Specialist Tools</span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
+            <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
+            <a href="cord-plotter.html" class="nav-link"><span class="nav-icon">📌</span><span class="nav-text">Cordinate Plotter</span></a>
+            <a href="resources.html" class="nav-link"><span class="nav-icon">ℹ️</span><span class="nav-text">Resources</span></a>
+        </nav>
+    </header>
+    <div id="hud">
+        <div class="hud-card" id="scoreCard">SCORE: <span id="score" class="highlight">0</span></div>
+        <div class="hud-card" id="timeCard">TIME: <span id="timeDisplay" class="highlight">0s</span></div>
+        <div class="hud-card" id="statusCard">CONDITIONS: <span id="status" class="highlight">CALM SEAS</span></div>
+    </div>
+    
+    <div id="ocean">
+        <div id="dangerLine"><span id="dangerLabel">🚨 SHARK ZONE</span></div>
+        
+        <!-- Sirens placed completely separate from the boat element for perfect indexing -->
+        <div id="sirens"></div>
+        <div id="player" class="entity">🛥️</div>
+
+        <!-- MAIN MENU SCREEN -->
+        <div id="startScreen" class="screen-overlay">
+            <div class="dialog-box">
+                <h1>Coast Guard Ops Command</h1>
+                <p>Command your vessel using your cursor. Time is your greatest threat. Perform rescues, avoid hazards, and intercept smugglers!</p>
+                
+                <div class="dashboard">
+                    <div class="panel">
+                        <h3 style="margin-top:0; color:#ffb3b3; border-bottom: 1px solid rgba(255,179,179,0.3); padding-bottom: 5px;">Threat Profile</h3>
+                        <p style="margin: 6px 0; font-size: 14px;">🏊 Swimmer (+1 Pt)</p>
+                        <p style="margin: 6px 0; font-size: 14px; color:#45f3ff;">📦 Contraband (+5 Pts)</p>
+                        <p style="margin: 6px 0; font-size: 14px;">🪨/🪵/💣 Hazards (Crash)</p>
+                        <p style="margin: 6px 0; font-size: 14px; color:#ff3333;">⛵ Civilians (Crash!)</p>
+                        <p style="margin: 6px 0; font-size: 14px; color:#ff3333;">🌀 Whirlpools (Crash)</p>
+                    </div>
+                    <div class="panel">
+                        <h3 style="margin-top:0; color:#00f5d4; border-bottom: 1px solid rgba(0,245,212,0.3); padding-bottom: 5px;">Top Operators</h3>
+                        <ol id="leaderboardUI" class="leaderboard-list"></ol>
+                    </div>
+                </div>
+                <button class="btn" onclick="startGame()">Begin Patrol</button>
+            </div>
+        </div>
+
+        <!-- DEBRIEF / SCORE SCREEN -->
+        <div id="endScreen" class="screen-overlay" style="display: none;">
+            <div class="dialog-box">
+                <h2 style="color:#ff4d4d; margin-top: 0; border-bottom: 2px solid #ff4d4d; padding-bottom: 10px;">MISSION DEBRIEF</h2>
+                <p id="failReason" style="font-size: 18px; margin: 15px 0;"></p>
+                
+                <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.2); padding:15px; border-radius:8px;">
+                    <p style="margin:0; font-size:20px;">Score: <span id="finalScore" class="highlight">0</span></p>
+                    <p style="margin:0; font-size:20px;">Time Active: <span id="finalTime" class="highlight">0s</span></p>
+                </div>
+                
+                <!-- Shown only if Top 10 -->
+                <div id="highScoreSection" style="display:none; background: rgba(0, 245, 212, 0.1); padding: 20px; border-radius: 8px; border: 1px solid #00f5d4; margin: 20px 0;">
+                    <h3 style="margin-top: 0; color: #00f5d4;">🏆 NEW RECORD ESTABLISHED</h3>
+                    <p style="margin: 5px 0 15px; font-size: 14px;">Your performance qualifies for the Wall of Honor. Enter callsign:</p>
+                    <input type="text" id="playerName" placeholder="CALLSIGN" maxlength="12">
+                    <button class="btn" style="margin-top: 15px;" onclick="submitHighScore()">Record Data</button>
+                </div>
+                <button id="mainMenuBtn" class="btn btn-secondary" onclick="returnToMainMenu()">Return to Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const headerNav = document.getElementById('headerNav')
+        const ocean = document.getElementById('ocean');
+        const player = document.getElementById('player');
+        const scoreElement = document.getElementById('score');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const statusElement = document.getElementById('status');
+        const startScreen = document.getElementById('startScreen');
+        const endScreen = document.getElementById('endScreen');
+        const dangerLine = document.getElementById('dangerLine');
+        const leaderboardUI = document.getElementById('leaderboardUI');
+        const sirens = document.getElementById('sirens');
+        
+        // HUD Cards for flashing visual effects
+        const hudCards = [document.getElementById('scoreCard'), document.getElementById('timeCard'), document.getElementById('statusCard')];
+        
+        let score = 0, isGameOver = true, spawnTimeout;
+        let lastX = window.innerWidth / 2;
+        let dangerY = window.innerHeight - 150;
+        let gameStartTime = 0;
+        let gameTimeTracker;
+
+        let activeContraband = 0; 
+
+        // Load Leaderboard
+        let leaderboard = JSON.parse(localStorage.getItem('cg_combined_leaderboard')) || [];
+        function renderLeaderboard() {
+            leaderboardUI.innerHTML = '';
+            if (leaderboard.length === 0) {
+                leaderboardUI.innerHTML = '<li><span>No records found.</span><span>---</span></li>';
+            } else {
+                leaderboard.forEach(entry => {
+                    leaderboardUI.innerHTML += `<li><span>${entry.name}</span> <span>${entry.score}</span></li>`;
+                });
+            }
+        }
+        renderLeaderboard();
+
+        // Screen Resize Handling
+        function resize() {
+            dangerY = window.innerHeight - 150;
+            dangerLine.style.top = dangerY + 'px';
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 1:1 Instant Mouse tracking (Forces both the Boat and Sirens to map directly to cursor coordinates)
+        window.addEventListener('mousemove', e => {
+            if (isGameOver) return;
+            player.style.left = e.clientX + 'px';
+            player.style.top = e.clientY + 'px';
+            
+            // Sirens stay directly centered on cursor coordinates
+            sirens.style.left = e.clientX + 'px';
+            sirens.style.top = e.clientY + 'px';
+            
+            const direction = e.clientX > lastX ? -1 : 1;
+            player.style.transform = `translate(-50%, -50%) scaleX(${direction})`;
+            lastX = e.clientX;
+        });
+
+        // Time calculations
+        function getElapsedTime() {
+            if (isGameOver) return 0;
+            return Math.floor((Date.now() - gameStartTime) / 1000);
+        }
+
+        // Active Pursuit Siren Logic (Highly Visible UI + Local Sirens)
+        function startPursuit() {
+            activeContraband++;
+            sirens.style.display = 'block';
+            statusElement.innerText = "SMUGGLER PURSUIT";
+            statusElement.style.color = "#ff3366";
+            
+            // Add threat glows to HUD cards
+            hudCards.forEach(card => card.classList.add('hud-pursuit'));
+        }
+
+        function endPursuit() {
+            activeContraband--;
+            if (activeContraband <= 0) {
+                activeContraband = 0;
+                sirens.style.display = 'none'; 
+                statusElement.innerText = "";  
+                hudCards.forEach(card => card.classList.remove('hud-pursuit'));
+                updateTimeline();
+            }
+        }
+
+        function createEntity(type) {
+            if (isGameOver) return;
+            const entity = document.createElement('div');
+            entity.classList.add('entity');
+            if (type === 'whirlpool') entity.classList.add('whirlpool');
+            
+            const icons = { swimmer:'🏊', rock:'🪨', debris:'🪵', mine:'💣', whirlpool:'🌀', contraband:'📦', civilian:'⛵' };
+            entity.innerText = icons[type];
+            
+            let x = Math.random() * (window.innerWidth - 100) + 50;
+            let y = (type === 'whirlpool') ? -100 : -50;
+            entity.style.left = x + 'px';
+            entity.style.top = y + 'px';
+            ocean.appendChild(entity);
+
+            let baseSpeed = { swimmer: 3.5, rock: 4.5, debris: 4, mine: 7, whirlpool: 3, contraband: 4.5, civilian: 3.5 }[type];
+            let elapsed = getElapsedTime();
+            let speed = baseSpeed + (elapsed * 0.08); 
+
+            if (type === 'contraband') {
+                startPursuit();
+            }
+
+            function fall() {
+                if (isGameOver) { entity.remove(); return; }
+                y += speed;
+                entity.style.top = y + 'px';
+
+                const pRect = player.getBoundingClientRect();
+                const eRect = entity.getBoundingClientRect();
+                const buffer = (type === 'whirlpool') ? 35 : (type === 'civilian') ? 25 : 20;
+
+                // Collision Logic
+                if (!(pRect.right-buffer < eRect.left+buffer || pRect.left+buffer > eRect.right-buffer || pRect.bottom-buffer < eRect.top+buffer || pRect.top+buffer > eRect.bottom-buffer)) {
+                    if (type === 'swimmer') {
+                        score++; scoreElement.innerText = score; entity.remove();
+                    } else if (type === 'contraband') {
+                        score += 5; scoreElement.innerText = score; entity.remove();
+                        endPursuit(); 
+                    } else {
+                        handleCrash(type); 
+                    }
+                } 
+                // Border crossing logic
+                else if ((type === 'swimmer' || type === 'contraband') && y > dangerY) {
+                    if (type === 'swimmer') {
+                        isGameOver = true; entity.remove(); triggerShark(x, y);
+                    } else {
+                        entity.remove(); 
+                        endPursuit(); 
+                    }
+                } else if (y > window.innerHeight + 150) {
+                    entity.remove();
+                } else {
+                    requestAnimationFrame(fall);
+                }
+            }
+            requestAnimationFrame(fall);
+        }
+
+        function handleCrash(obstacle) {
+            isGameOver = true;
+            clearTimeout(spawnTimeout);
+            clearInterval(gameTimeTracker);
+            player.innerText = '💥';
+            statusElement.innerText = 'VESSEL LOST';
+            statusElement.style.color = '#ff3333';
+            sirens.style.display = 'none'; 
+            hudCards.forEach(card => card.classList.remove('hud-pursuit'));
+            document.body.style.cursor = 'default';
+
+            setTimeout(() => {
+                player.classList.add('sinking');
+                setTimeout(() => {
+                    let obstacleNames = { rock: 'a rock reef', debris: 'floating debris log', mine: 'a floating sea mine', whirlpool: 'a whirlpool vortex', civilian: 'a civilian sailboat' };
+                    let failMsg = obstacle === 'civilian' ? "You collided with a civilian sailboat. Command has terminated the mission." : `The vessel struck ${obstacleNames[obstacle]} and sank.`;
+                    processEndGame(failMsg);
+                }, 1500);
+            }, 400);
+        }
+
+        function triggerShark(x, y) {
+            clearTimeout(spawnTimeout);
+            clearInterval(gameTimeTracker);
+            sirens.style.display = 'none'; 
+            hudCards.forEach(card => card.classList.remove('hud-pursuit'));
+            document.body.style.cursor = 'default';
+            const shark = document.createElement('div');
+            shark.classList.add('entity');
+            shark.style.fontSize = '70px';
+            shark.innerText = '🦈';
+            shark.style.left = x + 'px';
+            shark.style.top = (window.innerHeight + 100) + 'px';
+            ocean.appendChild(shark);
+
+            setTimeout(() => {
+                shark.style.transition = 'top 0.4s ease-out';
+                shark.style.top = (y - 20) + 'px';
+                setTimeout(() => {
+                    shark.innerText = '💥';
+                    setTimeout(() => processEndGame("A survivor drifted too far south and was intercepted by sharks."), 600);
+                }, 400);
+            }, 50);
+        }
+
+        function spawnLoop() {
+            if (isGameOver) return;
+            
+            const elapsed = getElapsedTime();
+            const r = Math.random();
+            
+            // IF PURSUIT MODE IS ACTIVE: Spawn absolutely ZERO swimmers to prevent cheap deaths
+            if (activeContraband > 0) {
+                // Spawn smugglers and hazards only
+                if (r < 0.25) createEntity('contraband');
+                else if (r < 0.7) createEntity(Math.random() > 0.5 ? 'rock' : 'debris');
+                else createEntity('civilian');
+            } 
+            // STANDARD SPOTS (Swimmers spawn normally here when sirens are off)
+            else {
+                // THE INTERDICTION EVENT TRIGGERS (8% chance after 15s)
+                if (elapsed > 15 && r < 0.08) {
+                    createEntity('contraband');
+                    if (Math.random() < 0.4) createEntity('civilian'); 
+                } 
+                // Normal Weather Tiers
+                else if (elapsed < 15) {
+                    if (r < 0.3) createEntity('swimmer');
+                    else createEntity(Math.random() > 0.5 ? 'rock' : 'debris');
+                } else if (elapsed < 35) {
+                    if (r < 0.25) createEntity('swimmer');
+                    else if (r < 0.7) createEntity(Math.random() > 0.5 ? 'rock' : 'debris');
+                    else createEntity('mine');
+                } else {
+                    if (r < 0.25) createEntity('swimmer');
+                    else if (r < 0.6) createEntity(Math.random() > 0.5 ? 'rock' : 'debris');
+                    else if (r < 0.8) createEntity('mine');
+                    else createEntity('whirlpool');
+                }
+            }
+
+            let nextSpawnDelay = Math.max(200, 900 - (elapsed * 12));
+            spawnTimeout = setTimeout(spawnLoop, nextSpawnDelay);
+        }
+
+        // Clock monitor & visual shifts
+        function updateTimeline() {
+            const elapsed = getElapsedTime();
+            timeDisplay.innerText = elapsed + 's';
+
+            if (statusElement.innerText !== "SMUGGLER PURSUIT") {
+                if (elapsed >= 55) {
+                    statusElement.innerText = "HURRICANE FORCE";
+                    statusElement.style.color = "#d61c4e";
+                    ocean.style.background = "#011627"; 
+                } else if (elapsed >= 35) {
+                    statusElement.innerText = "STORM CONDITIONS";
+                    statusElement.style.color = "#ff3333";
+                    ocean.style.background = "#012a4a"; 
+                } else if (elapsed >= 15) {
+                    statusElement.innerText = "ROUGH SEAS";
+                    statusElement.style.color = "#ff9f1c";
+                    ocean.style.background = "#013a63"; 
+                } else {
+                    statusElement.innerText = "CALM SEAS";
+                    statusElement.style.color = "#00f5d4";
+                    ocean.style.background = "#014f86"; 
+                }
+            }
+        }
+
+        function isTop10(s) {
+            if (s === 0) return false;
+            if (leaderboard.length < 10) return true;
+            return s > leaderboard[leaderboard.length - 1].score;
+        }
+
+        function processEndGame(reason) {
+            headerNav.style.opacity = 1
+            const elapsed = getElapsedTime();
+            document.getElementById('failReason').innerText = reason;
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalTime').innerText = elapsed + 's';
+            endScreen.style.display = 'flex';
+            
+            if (isTop10(score)) {
+                document.getElementById('highScoreSection').style.display = 'block';
+                document.getElementById('mainMenuBtn').style.display = 'none';
+                document.getElementById('playerName').value = '';
+                document.getElementById('playerName').focus();
+            } else {
+                document.getElementById('highScoreSection').style.display = 'none';
+                document.getElementById('mainMenuBtn').style.display = 'block';
+            }
+        }
+
+        function submitHighScore() {
+            let name = document.getElementById('playerName').value.trim().toUpperCase();
+            if (!name) name = "CG_CUTTER";
+            
+            leaderboard.push({ name: name, score: score });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10);
+            
+            localStorage.setItem('cg_combined_leaderboard', JSON.stringify(leaderboard));
+            returnToMainMenu();
+        }
+
+        function returnToMainMenu() {
+            endScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+            renderLeaderboard();
+            player.style.display = 'none';
+            dangerLine.style.display = 'none';
+        }
+
+        function startGame() {
+            headerNav.style.opacity = 0;
+            document.querySelectorAll('.entity').forEach(e => { if(e.id !== 'player') e.remove(); });
+            
+            score = 0; scoreElement.innerText = '0';
+            isGameOver = false;
+            gameStartTime = Date.now();
+            activeContraband = 0; 
+            
+            // Reset player boat
+            player.innerText = '🛥️';
+            player.classList.remove('sinking');
+            player.style.opacity = '1';
+            player.style.display = 'block';
+            
+            // Initialize sirens
+            sirens.style.display = 'none';
+            dangerLine.style.display = 'block';
+            
+            statusElement.innerText = 'CALM SEAS';
+            statusElement.style.color = '#00f5d4';
+            ocean.style.background = "#014f86"; 
+            
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            document.body.style.cursor = 'none';
+
+            clearTimeout(spawnTimeout);
+            clearInterval(gameTimeTracker);
+            
+            spawnLoop();
+            gameTimeTracker = setInterval(updateTimeline, 1000);
+        }
+    </script>
+</body>
+</html>
