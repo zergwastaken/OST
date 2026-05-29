@@ -1,46 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="images/logo.png">
-    <title>OS Tools - Cordinate Plotter</title>
+    <title>OS Tools - Coordinate Plotter</title>
     
     <!-- Leaflet Map CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <link rel="stylesheet" href="css/cordplotter.css">
     <link rel="stylesheet" href="css/style.css">
-
 </head>
 <body>
 
+<script src="scripts/header-footer.js" data-footer=false defer></script>
 <div id="map"></div>
 
-<header class="nav-header">
-    <a class="nav-brand" href="index.html">
-        <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
-        <span class="nav-title">Operations Specialist Tools</span>
-    </a>
-    <nav class="nav-links">
-        <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
-        <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
-        <a href="cord-plotter.html" class="nav-link"><span class="nav-icon">📌</span><span class="nav-text">Cordinate Plotter</span></a>
-    </nav>
-</header>
+<!-- 📌 Interactive Dropdown Menu Container -->
+<div id="waypointContextMenu" class="custom-context-menu">
+    <ul>
+        <li onclick="handleMenuOption('measure')"><span>📐</span> Measure Distance from Pin</li>
+        <li onclick="handleMenuOption('copy')"><span>📋</span> Copy DDM Coordinates</li>
+        <li onclick="handleMenuOption('clear')"><span>❌</span> Clear Pin</li>
+    </ul>
+</div>
 
 <div class="converter-container">
     <div class="header">
         <h1>Coordinate Plotter</h1>
-        <p>Enter coordinates or click map to drop a pin.</p>
+        <p>Drop a pin, drag it to fine-tune, or right-click for quick actions.</p>
     </div>
-
-    <div class="instruction-box">
-        🖱️ Click anywhere on map to capture coordinates
+    <div class="instruction-box" style="font-size: 0.9em;">
+        🖱️ Click to drop pin | 🖐️ Drag pin to move | 🖱️ Right-click pin for options
     </div>
-
     <div class="input-group">
         <label>Input Format Mode</label>
         <select id="inputFormat" onchange="toggleInputs()">
@@ -121,121 +114,6 @@
 <!-- PouchDB and Leaflet Caching Plugin -->
 <script src="https://unpkg.com/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
 <script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@1.0.0/L.TileLayer.PouchDBCached.js"></script>
-
-<script>
-    const map = L.map('map', { zoomControl: false }).setView([39.8, -98.5], 4);
-    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    // --- OPTIMIZED & CACHED TILE LAYER ---
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        keepBuffer: 4,               // Preloads tiles outside the immediate view
-        updateWhenIdle: false,       // Continues loading during active pans
-        updateInterval: 150,         // Speeds up tile requests during pan
-
-        // Cache Settings:
-        useCache: true,              // Saves loaded tiles to the local database
-        crossOrigin: true,           // Required to avoid CORS issues when saving tiles
-        cacheMaxAge: 1000*60*60*24*7 // Keeps cached tiles valid for 7 days (in milliseconds)
-    }).addTo(map);
-
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-    let marker = null;
-
-    // --- NEW: Map Click Handler ---
-    map.on('click', function(e) {
-        const lat = e.latlng.lat;
-        const lon = e.latlng.lng;
-        
-        updateMarker(lat, lon);
-        populateInputs(lat, lon);
-        calculateResults(lat, lon);
-    });
-
-    function updateMarker(lat, lon) {
-        if (marker) marker.setLatLng([lat, lon]);
-        else marker = L.marker([lat, lon]).addTo(map);
-    }
-
-    function toggleInputs() {
-        const format = document.getElementById("inputFormat").value;
-        document.getElementById("ddmInputs").style.display = format === "DDM" ? "block" : "none";
-        document.getElementById("ddInputs").style.display = format === "DD" ? "block" : "none";
-        document.getElementById("dmsInputs").style.display = format === "DMS" ? "block" : "none";
-    }
-
-    // Logic for when user types numbers manually
-    function manualEntry() {
-        const format = document.getElementById("inputFormat").value;
-        let lat = NaN, lon = NaN;
-
-        if (format === "DD") {
-            lat = parseFloat(document.getElementById("ddLat").value);
-            lon = parseFloat(document.getElementById("ddLon").value);
-        } else if (format === "DDM") {
-            let lD = parseFloat(document.getElementById("ddmLatDeg").value);
-            let lM = parseFloat(document.getElementById("ddmLatMin").value);
-            let lnD = parseFloat(document.getElementById("ddmLonDeg").value);
-            let lnM = parseFloat(document.getElementById("ddmLonMin").value);
-            if(!isNaN(lD)) lat = (lD + (lM||0)/60) * (document.getElementById("ddmLatDir").value==="S"?-1:1);
-            if(!isNaN(lnD)) lon = (lnD + (lnM||0)/60) * (document.getElementById("ddmLonDir").value==="W"?-1:1);
-        } else if (format === "DMS") {
-            let lD = parseFloat(document.getElementById("dmsLatDeg").value), lM = parseFloat(document.getElementById("dmsLatMin").value), lS = parseFloat(document.getElementById("dmsLatSec").value);
-            let lnD = parseFloat(document.getElementById("dmsLonDeg").value), lnM = parseFloat(document.getElementById("dmsLonMin").value), lnS = parseFloat(document.getElementById("dmsLonSec").value);
-            if(!isNaN(lD)) lat = (lD + (lM||0)/60 + (lS||0)/3600) * (document.getElementById("dmsLatDir").value==="S"?-1:1);
-            if(!isNaN(lnD)) lon = (lnD + (lnM||0)/60 + (lnS||0)/3600) * (document.getElementById("dmsLonDir").value==="W"?-1:1);
-        }
-
-        if (!isNaN(lat) && !isNaN(lon)) {
-            updateMarker(lat, lon);
-            calculateResults(lat, lon);
-            map.panTo([lat, lon]);
-        }
-    }
-
-    // Populate the text boxes when map is clicked
-    function populateInputs(lat, lon) {
-        // DD
-        document.getElementById("ddLat").value = lat.toFixed(6);
-        document.getElementById("ddLon").value = lon.toFixed(6);
-
-        // DDM
-        const absLat = Math.abs(lat), absLon = Math.abs(lon);
-        document.getElementById("ddmLatDeg").value = Math.floor(absLat);
-        document.getElementById("ddmLatMin").value = ((absLat % 1) * 60).toFixed(4);
-        document.getElementById("ddmLatDir").value = lat >= 0 ? "N" : "S";
-        document.getElementById("ddmLonDeg").value = Math.floor(absLon);
-        document.getElementById("ddmLonMin").value = ((absLon % 1) * 60).toFixed(4);
-        document.getElementById("ddmLonDir").value = lon >= 0 ? "E" : "W";
-
-        // DMS
-        document.getElementById("dmsLatDeg").value = Math.floor(absLat);
-        document.getElementById("dmsLatMin").value = Math.floor((absLat % 1) * 60);
-        document.getElementById("dmsLatSec").value = ((((absLat % 1) * 60) % 1) * 60).toFixed(1);
-        document.getElementById("dmsLatDir").value = lat >= 0 ? "N" : "S";
-        document.getElementById("dmsLonDeg").value = Math.floor(absLon);
-        document.getElementById("dmsLonMin").value = Math.floor((absLon % 1) * 60);
-        document.getElementById("dmsLonSec").value = ((((absLon % 1) * 60) % 1) * 60).toFixed(1);
-        document.getElementById("dmsLonDir").value = lon >= 0 ? "E" : "W";
-    }
-
-    function calculateResults(lat, lon) {
-        document.getElementById("resDD").innerText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-        const pad = (n, l) => String(Math.floor(n)).padStart(l, '0');
-        
-        const ddmLat = `${pad(Math.abs(lat), 2)}° ${((Math.abs(lat)%1)*60).toFixed(4).padStart(7,'0')}' ${lat>=0?'N':'S'}`;
-        const ddmLon = `${pad(Math.abs(lon), 3)}° ${((Math.abs(lon)%1)*60).toFixed(4).padStart(7,'0')}' ${lon>=0?'E':'W'}`;
-        document.getElementById("resDDM").innerText = `${ddmLat} / ${ddmLon}`;
-
-        const dmsLat = `${pad(Math.abs(lat), 2)}° ${Math.floor((Math.abs(lat)%1)*60)}' ${((((Math.abs(lat)%1)*60)%1)*60).toFixed(1)}" ${lat>=0?'N':'S'}`;
-        const dmsLon = `${pad(Math.abs(lon), 3)}° ${Math.floor((Math.abs(lon)%1)*60)}' ${((((Math.abs(lon)%1)*60)%1)*60).toFixed(1)}" ${lon>=0?'E':'W'}`;
-        document.getElementById("resDMS").innerText = `${dmsLat} / ${dmsLon}`;
-    }
-
-    function copyResult(id, btn) {
-        navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
-            const old = btn.innerText; btn.innerText = "✓";
-            setTimeout(() => btn.innerText = old, 1000);
-        });
-    }
-</script>
+<script src="scripts/cord-plotter.js"></script>
 </body>
 </html>
