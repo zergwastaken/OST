@@ -1,0 +1,98 @@
+{
+  "credits": [
+    {
+      "role": "Project Lead",
+      "name": "OS3 Grinager",
+      "focus": "Systems Architecture & Code Development"
+    },
+    {
+      "role": "Data Entry",
+      "name": "OS3 Villanueva",
+      "focus": "Being a CHAD and creating cheat sheet data for the website."
+    },
+    {
+      "role": "Field Testing",
+      "name": "AUX Larry Shushan",
+      "focus": "Reporting issues & grammar corrections <br> (\"BTW we generally refer to a helicopter as a helo rather than heli\")"
+    },
+    {
+      "role": "Feedback",
+      "name": "OS2 Palkie",
+      "focus": "Recommended a ruler system for the cordinate plotter (to check NM distance between 2 points)."
+    },
+    {
+      "role": "Just Goated",
+      "name": "CIV Nicole Cheav",
+      "focus": "My gorgeous wife that helps me on a day to day basis."
+    },
+    {
+      "role": "Just Goated",
+      "name": "OS3 Vargas",
+      "focus": "Gets hit by cars; still comes into watch."
+    },
+    {
+      "role": "Beta Testing",
+      "name": "USCG Sector San Diego JHOC",
+      "focus": "Reporting bugs & giving meaningful feedback"
+    },
+    {
+      "role": "Beta Testing",
+      "name": "OS Class 05-26",
+      "focus": "Class overall helped with the website."
+    },
+    {
+      "role": "AI Integration",
+      "name": "Gemini Enterprise",
+      "focus": "Technical Optimization"
+    },
+    {
+      "role": "Map Data",
+      "name": "OpenStreetMap / Leaflet",
+      "focus": "Geospatial Visualization Engine"
+    }
+  ],
+  "updates": [
+    {
+      "date": "26MAY26",
+      "version": "v2.3.0",
+      "description": "<b>Pixel Drawing & SAR/LE Game:</b> Users now can play a SAR/LE Game where your a boat and must save swimmers/hunt down smugglers. Also added a fun little pixel drawer that will eventually be a global drawing board.",
+      "status": "Active"
+    },
+    {
+      "date": "26MAY26",
+      "version": "v2.2.1",
+      "description": "<b>Cordinate Plotter Update:</b> Can now check distance between to points using a NM ruler!",
+      "status": "Superseded"
+    },
+    {
+      "date": "25MAY26",
+      "version": "v2.2.0",
+      "description": "<b>Resources Page:</b> Users can now quickly and efficiently access many detailed resources, acronyms, templates, and much more from the resources page!",
+      "status": "Superseded"
+    },
+    {
+      "date": "24MAY26",
+      "version": "v2.1.1",
+      "description": "<b>Credits Page:</b> Added a credits page / update log.",
+      "status": "Superseded"
+    },
+    {
+      "date": "24MAY26",
+      "version": "v2.1.0",
+      "description": "<b>Cordinate Plotter:</b> Added Leaflet.js map integration with click-to-capture coordinate functionality.",
+      "status": "Superseded"
+    },
+    {
+      "date": "30NOV25",
+      "version": "v1.1.0",
+      "description": "<b>Flash Cards & Map:</b> Added flash cards & map quiz.",
+      "status": "Superseded"
+    },
+    {
+      "date": "25NOV25",
+      "version": "v1.0.0",
+      "description": "<b>Multi-Timer Tool:</b> Launched core timer utility for tracking comms checks and asset endurance.",
+      "status": "Superseded"
+    }
+  ]
+}
