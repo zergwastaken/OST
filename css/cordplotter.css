@@ -47,3 +47,102 @@ input:focus { outline: none; border-color: var(--cg-orange); }
 
 .btn-copy { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; }
 .instruction-box { font-size: 0.75rem; color: var(--cg-orange); background: rgba(255,59,0,0.1); padding: 8px; border-radius: 4px; margin-bottom: 15px; text-align: center; border: 1px dashed var(--cg-orange); }
+
+
+/* Custom UI Styling for the Map Controls */
+.custom-map-btn {
+    background: #ffffff;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    text-decoration: none;
+    color: #333;
+}
+.custom-map-btn:hover {
+    background: #f4f4f4;
+    color: #000;
+}
+.custom-map-btn.active {
+    background: #ff5252;
+    color: #ffffff;
+    border-color: #d32f2f;
+}
+
+/* Tooltip tracking cursor (Total Distance) */
+.measure-tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #fff;
+    border-radius: 4px;
+    color: #fff;
+    font: 12px/16px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+.measure-tooltip span.hint {
+    display: block;
+    font-size: 10px;
+    font-weight: normal;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+/* Tooltip for Segment Distances */
+.segment-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ff3366;
+    border-radius: 3px;
+    color: #ff3366;
+    font: 11px/14px Arial, sans-serif;
+    font-weight: bold;
+    padding: 2px 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* 📌 Custom Dropdown Context Menu Styling */
+.custom-context-menu {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 2000;
+    display: none;
+    min-width: 180px;
+    padding: 5px 0;
+    font-family: Arial, sans-serif;
+}
+.custom-context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.custom-context-menu li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s ease;
+}
+.custom-context-menu li:hover {
+    background: #f0f4f8;
+    color: #0078d4;
+}
+.custom-context-menu li:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
