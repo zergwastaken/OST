@@ -8,17 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header class="nav-header">
-        <a class="nav-brand" href="index.html">
-            <img src="images/logo.png" alt="OS Tools Logo" class="nav-logo-img">
-            <span class="nav-title">Operations Specialist Tools</span>
-        </a>
-        <nav class="nav-links">
-            <a href="index.html" class="nav-link"><span class="nav-icon">🏠</span><span class="nav-text">Home</span></a>
-            <a href="timer.html" class="nav-link"><span class="nav-icon">⏲️</span><span class="nav-text">Timer</span></a>
-            <a href="cord-plotter.html" class="nav-link"><span class="nav-icon">📌</span><span class="nav-text">Cordinate Plotter</span></a>
-        </nav>
-    </header>
+    <script src="scripts/header-footer.js" defer></script>
     <main class="home-main">
         <div class="home-hero">
                 <img src="images/logo.png" alt="Radar and navigation" class="home-hero-img animate-float">
@@ -37,20 +27,16 @@
                 <p>Quickly plot cordinates and convert cordinates</p>
             </a>
             <a href="credits.html" class="tool-card animate-slide-up" style="animation-delay: 0.6s;">
-                <div class="tool-icon">❤️</div>
-                <h3>Credits & Updates</h3>
-                <p>Quickly access the many updates and people that have contriubtes to this project</p>
+                <div class="tool-icon">ℹ️</div>
+                <h3>Resources</h3>
+                <p>Efficiently access many resources & references</p>
             </a>
         </div>
-        <div class="home-footer-fact animate-fade-in" style="animation-delay: 0.8s;">
-            <div class="fact-label">Did you know?</div>
-            <div id="fact-footer" class="fact-text">The U.S. Coast Guard is the oldest continuous seagoing service in America.</div>
-        </div>
     </main>
-    <footer class="main-footer">
-        <p>Built with <a href="credits.html">❤️</a> for the fleet</p>
-        <p>© 2026 Operations Specialist Tools. Licensed under the MIT License.</p>
-    </footer>
+    <div class="home-footer-fact animate-fade-in" style="animation-delay: 0.8s;">
+        <div class="fact-label">Did you know?</div>
+        <div id="fact-footer" class="fact-text">The U.S. Coast Guard is the oldest continuous seagoing service in America.</div>
+    </div>
     <script src="scripts/facts.js"></script>
 </body>
 </html>
