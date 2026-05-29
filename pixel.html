@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel-Perfect Board</title>
+    <style>
+        /* Fill the screen and hide scrollbars */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; /* Prevent text highlight while dragging to draw */
+        }
+
+        /* Floating UI Controls */
+        #ui-overlay {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            color: #fff;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #ui-overlay h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        /* Styling the color picker */
+        input[type="color"] {
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        /* Styling buttons */
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated; /* Sharp pixel edges */
+            cursor: crosshair;
+        }
+    </style>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="scripts/header-footer.js" data-footer=false defer></script>
+    <!-- Floating UI -->
+    <div id="ui-overlay">
+        <h1>Pixel Board 🎨</h1>
+        <div class="control-row">
+            <label for="colorPicker">Color:</label>
+            <input type="color" id="colorPicker" value="#00ffcc">
+        </div>
+        <div class="control-row">
+            <span>Clear Grid:</span>
+            <button id="clearBtn">Clear</button>
+        </div>
+    </div>
+
+    <!-- Interactive Drawing Board -->
+    <canvas id="pixelCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Force every pixel to be a perfect 10x10 square
+        const PIXEL_SIZE = 10; 
+
+        // Stores colored pixels dynamically using key format "x,y" (e.g., "12,45" -> "#00ffcc")
+        let boardState = {}; 
+        let isDrawing = false;
+
+        // Resize the canvas to fit the window exactly
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            redrawWholeBoard();
+        }
+
+        // Draws a perfect square block
+        function drawBlock(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+        }
+
+        // Loops through only the colored pixels in memory and draws them
+        function redrawWholeBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Re-render everything that has been painted
+            for (const coord in boardState) {
+                const [x, y] = coord.split(',').map(Number);
+                drawBlock(x, y, boardState[coord]);
+            }
+        }
+
+        // Process a click/touch and find the precise grid position
+        function handleAction(event) {
+            const rect = canvas.getBoundingClientRect();
+            
+            // Divide raw screen coordinates by our fixed square size
+            const x = Math.floor((event.clientX - rect.left) / PIXEL_SIZE);
+            const y = Math.floor((event.clientY - rect.top) / PIXEL_SIZE);
+
+            const color = colorPicker.value;
+            const coordKey = `${x},${y}`;
+
+            // Save the stroke to memory and paint immediately
+            boardState[coordKey] = color;
+            drawBlock(x, y, color);
+        }
+
+        // Clear button event handler
+        clearBtn.addEventListener('click', () => {
+            boardState = {};
+            redrawWholeBoard();
+        });
+
+        // Mouse click and drag controls
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            handleAction(e);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) handleAction(e);
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        // Touch support for mobile devices
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            handleAction(e.touches[0]);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (isDrawing) {
+                handleAction(e.touches[0]);
+                e.preventDefault(); // Prevents mobile browsers from scrolling while drawing
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
+            isDrawing = false;
+        });
+
+        // Initialize board
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>
