@@ -13,7 +13,7 @@
     {
       "role": "Field Testing",
       "name": "AUX L. Shushan",
-      "focus": "Reporting issues & grammar corrections <br> (\"BTW we generally refer to a helicopter as a helo rather than heli\")"
+      "focus": "Reporting issues & grammar corrections <br> (\"BTW we generally refer to a helicopter as a helo rather than heli\")<br> <b>Also suggested adding Nautical Charts to the Cord Plotter</b>"
     },
     {
       "role": "Feedback",
@@ -53,46 +53,49 @@
   ],
   "updates": [
     {
+      "date": "02JUN26",
+      "version": "v2.4.1",
+      "description": "<b>Update To Credits Backend:</b> Status of system updates will now be automatically applied rather than manually."
+    },
+    {
+      "date": "02JUN26",
+      "version": "v2.4.0",
+      "description": "<b>Cord Plotter Update:</b> Cord plotter now has Nautical Charts from NOAA and OpenSeaMap embedded into it (suggested by AUX L. Shushan). Also added options and waypoint to the URL for easy cordination with peers. Now you can just copy and paste the URL and it will send them the waypoint your at."
+    },
+    {
       "date": "26MAY26",
       "version": "v2.3.0",
-      "description": "<b>Pixel Drawing & SAR/LE Game:</b> Users now can play a SAR/LE Game where your a boat and must save swimmers/hunt down smugglers. Also added a fun little pixel drawer that will eventually be a global drawing board.",
-      "status": "Active"
+      "description": "<b>Pixel Drawing & SAR/LE Game:</b> Users now can play a SAR/LE Game where your a boat and must save swimmers/hunt down smugglers. Also added a fun little pixel drawer that will eventually be a global drawing board."
     },
     {
       "date": "26MAY26",
       "version": "v2.2.1",
-      "description": "<b>Cordinate Plotter Update:</b> Can now check distance between to points using a NM ruler!",
-      "status": "Superseded"
+      "description": "<b>Cordinate Plotter Update:</b> Can now check distance between to points using a NM ruler!"
     },
     {
       "date": "25MAY26",
       "version": "v2.2.0",
-      "description": "<b>Resources Page:</b> Users can now quickly and efficiently access many detailed resources, acronyms, templates, and much more from the resources page!",
-      "status": "Superseded"
+      "description": "<b>Resources Page:</b> Users can now quickly and efficiently access many detailed resources, acronyms, templates, and much more from the resources page!"
     },
     {
       "date": "24MAY26",
       "version": "v2.1.1",
-      "description": "<b>Credits Page:</b> Added a credits page / update log.",
-      "status": "Superseded"
+      "description": "<b>Credits Page:</b> Added a credits page / update log."
     },
     {
       "date": "24MAY26",
       "version": "v2.1.0",
-      "description": "<b>Cordinate Plotter:</b> Added Leaflet.js map integration with click-to-capture coordinate functionality.",
-      "status": "Superseded"
+      "description": "<b>Cordinate Plotter:</b> Added Leaflet.js map integration with click-to-capture coordinate functionality."
     },
     {
       "date": "30NOV25",
       "version": "v1.1.0",
-      "description": "<b>Flash Cards & Map:</b> Added flash cards & map quiz.",
-      "status": "Superseded"
+      "description": "<b>Flash Cards & Map:</b> Added flash cards & map quiz."
     },
     {
       "date": "25NOV25",
       "version": "v1.0.0",
-      "description": "<b>Multi-Timer Tool:</b> Launched core timer utility for tracking comms checks and asset endurance.",
-      "status": "Superseded"
+      "description": "<b>Multi-Timer Tool:</b> Launched core timer utility for tracking comms checks and asset endurance."
     }
   ]
 }
