@@ -1,6 +1,4 @@
-// --- MAP INITIALIZATION & LAYERS ---
-
-// Parse coordinates, zoom, and layer configurations from URL if present
+// --- GLOBAL STATE & URL CONFIGURATION ---
 const urlParams = new URLSearchParams(window.location.search);
 const initialLat = parseFloat(urlParams.get('lat'));
 const initialLon = parseFloat(urlParams.get('lon'));
@@ -10,6 +8,10 @@ const initialOverlays = (urlParams.get('overlays') || '').split(',').map(s => s.
 
 const hasValidCoords = !isNaN(initialLat) && !isNaN(initialLon);
 const hasValidZoom = !isNaN(initialZoom);
+
+let marker = null;
+let selectedLatLng = null;
+const contextMenu = document.getElementById('waypointContextMenu');
 
 // Set view based on URL coords and zoom, or default fallbacks
 const map = L.map('map', { zoomControl: false })
@@ -49,17 +51,19 @@ if (initialBase === 'satellite') {
 
 // --- NAUTICAL CHART OVERLAY LAYERS ---
 const nauticalLayers = {
-        "noaa": L.tileLayer.wms('https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/WMSServer', {
+    "openseamap": L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+        attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors',
+        maxZoom: 18,
+        zIndex: 1000 // Ensure overlays render above any active base layers
+    }),
+    "noaa": L.tileLayer.wms('https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer/exts/MaritimeChartService/WMSServer', {
         layers: '0,1,2,3,4,5,6,7,8,9,10,11,12', // Requesting standard navigational chart layers
         format: 'image/png',
         transparent: true,
         attribution: 'Tiles &copy; NOAA / Office of Coast Survey',
         maxZoom: 18,
-        opacity: 0.85
-    }),
-    "openseamap": L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-        attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors',
-        maxZoom: 18
+        opacity: 0.85,
+        zIndex: 999 // Ensure overlays render above any active base layers
     })
 };
 
@@ -77,16 +81,11 @@ const baseMaps = {
 };
 
 const overlayMaps = {
-    "NOAA Marine Charts": nauticalLayers.noaa,
-    "OpenSeaMap Overlay": nauticalLayers.openseamap
+    "OpenSeaMap Overlay": nauticalLayers.openseamap,
+    "NOAA Marine Charts": nauticalLayers.noaa
 };
 
 L.control.layers(baseMaps, overlayMaps, {position: 'bottomright'}).addTo(map);
-
-// --- GLOBAL VARIABLES ---
-let marker = null;
-let selectedLatLng = null;
-const contextMenu = document.getElementById('waypointContextMenu');
 
 map.on('click mousedown dragstart zoomstart', closeContextMenu);
 document.addEventListener('click', closeContextMenu);
@@ -96,7 +95,6 @@ map.on('click', function(e) {
     if (isMeasuring) return;
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
-
     updateMarker(lat, lon);
     populateInputs(lat, lon);
     calculateResults(lat, lon);
@@ -112,6 +110,9 @@ function syncURL() {
         const pos = marker.getLatLng();
         url.searchParams.set('lat', pos.lat.toFixed(6));
         url.searchParams.set('lon', pos.lng.toFixed(6));
+    } else {
+        url.searchParams.delete('lat');
+        url.searchParams.delete('lon');
     }
 
     // Save map zoom
@@ -145,7 +146,6 @@ function updateMarker(lat, lon, updateUrl = true) {
         marker.setLatLng([lat, lon]);
     } else {
         marker = L.marker([lat, lon], { draggable: true }).addTo(map);
-
         marker.on('dragend', function(e) {
             const pos = e.target.getLatLng();
             populateInputs(pos.lat, pos.lng);
@@ -166,11 +166,6 @@ function updateMarker(lat, lon, updateUrl = true) {
     }
 
     if (updateUrl) {
-        // Enforce marker coordinates immediately in URL parameters
-        const url = new URL(window.location);
-        url.searchParams.set('lat', lat.toFixed(6));
-        url.searchParams.set('lon', lon.toFixed(6));
-        window.history.replaceState({}, '', url);
         syncURL();
     }
 }
@@ -204,11 +199,9 @@ function toggleInputs() {
     const formatSelect = document.getElementById("inputFormat");
     if (!formatSelect) return;
     const format = formatSelect.value;
-
     const ddm = document.getElementById("ddmInputs");
     const dd = document.getElementById("ddInputs");
     const dms = document.getElementById("dmsInputs");
-
     if (ddm) ddm.style.display = format === "DDM" ? "block" : "none";
     if (dd) dd.style.display = format === "DD" ? "block" : "none";
     if (dms) dms.style.display = format === "DMS" ? "block" : "none";
@@ -250,41 +243,51 @@ function manualEntry() {
     }
     if (!isNaN(lat) && !isNaN(lon)) {
         updateMarker(lat, lon);
-        populateInputs(lat, lon);
+        populateInputs(lat, lon, format); // Skip rewriting the active fields being edited!
         calculateResults(lat, lon);
         map.panTo([lat, lon]);
     }
 }
 
-function populateInputs(lat, lon) {
+function populateInputs(lat, lon, skipFormat = null) {
     const el = (id) => document.getElementById(id);
-    const ddLat = el("ddLat"), ddLon = el("ddLon");
-    if (ddLat) ddLat.value = lat.toFixed(6);
-    if (ddLon) ddLon.value = lon.toFixed(6);
+    
+    // Only update decimal fields if we aren't currently editing them
+    if (skipFormat !== "DD") {
+        const ddLat = el("ddLat"), ddLon = el("ddLon");
+        if (ddLat) ddLat.value = lat.toFixed(6);
+        if (ddLon) ddLon.value = lon.toFixed(6);
+    }
 
     const absLat = Math.abs(lat), absLon = Math.abs(lon);
 
-    const ddmLatDeg = el("ddmLatDeg"), ddmLatMin = el("ddmLatMin"), ddmLatDir = el("ddmLatDir");
-    if (ddmLatDeg) ddmLatDeg.value = Math.floor(absLat);
-    if (ddmLatMin) ddmLatMin.value = ((absLat % 1) * 60).toFixed(4);
-    if (ddmLatDir) ddmLatDir.value = lat >= 0 ? "N" : "S";
+    // Only update DDM fields if we aren't currently editing them
+    if (skipFormat !== "DDM") {
+        const ddmLatDeg = el("ddmLatDeg"), ddmLatMin = el("ddmLatMin"), ddmLatDir = el("ddmLatDir");
+        if (ddmLatDeg) ddmLatDeg.value = Math.floor(absLat);
+        if (ddmLatMin) ddmLatMin.value = ((absLat % 1) * 60).toFixed(4);
+        if (ddmLatDir) ddmLatDir.value = lat >= 0 ? "N" : "S";
 
-    const ddmLonDeg = el("ddmLonDeg"), ddmLonMin = el("ddmLonMin"), ddmLonDir = el("ddmLonDir");
-    if (ddmLonDeg) ddmLonDeg.value = Math.floor(absLon);
-    if (ddmLonMin) ddmLonMin.value = ((absLon % 1) * 60).toFixed(4);
-    if (ddmLonDir) ddmLonDir.value = lon >= 0 ? "E" : "W";
+        const ddmLonDeg = el("ddmLonDeg"), ddmLonMin = el("ddmLonMin"), ddmLonDir = el("ddmLonDir");
+        if (ddmLonDeg) ddmLonDeg.value = Math.floor(absLon);
+        if (ddmLonMin) ddmLonMin.value = ((absLon % 1) * 60).toFixed(4);
+        if (ddmLonDir) ddmLonDir.value = lon >= 0 ? "E" : "W";
+    }
 
-    const dmsLatDeg = el("dmsLatDeg"), dmsLatMin = el("dmsLatMin"), dmsLatSec = el("dmsLatSec"), dmsLatDir = el("dmsLatDir");
-    if (dmsLatDeg) dmsLatDeg.value = Math.floor(absLat);
-    if (dmsLatMin) dmsLatMin.value = Math.floor((absLat % 1) * 60);
-    if (dmsLatSec) dmsLatSec.value = ((((absLat % 1) * 60) % 1) * 60).toFixed(1);
-    if (dmsLatDir) dmsLatDir.value = lat >= 0 ? "N" : "S";
+    // Only update DMS fields if we aren't currently editing them
+    if (skipFormat !== "DMS") {
+        const dmsLatDeg = el("dmsLatDeg"), dmsLatMin = el("dmsLatMin"), dmsLatSec = el("dmsLatSec"), dmsLatDir = el("dmsLatDir");
+        if (dmsLatDeg) dmsLatDeg.value = Math.floor(absLat);
+        if (dmsLatMin) dmsLatMin.value = Math.floor((absLat % 1) * 60);
+        if (dmsLatSec) dmsLatSec.value = ((((absLat % 1) * 60) % 1) * 60).toFixed(1);
+        if (dmsLatDir) dmsLatDir.value = lat >= 0 ? "N" : "S";
 
-    const dmsLonDeg = el("dmsLonDeg"), dmsLonMin = el("dmsLonMin"), dmsLonSec = el("dmsLonSec"), dmsLonDir = el("dmsLonDir");
-    if (dmsLonDeg) dmsLonDeg.value = Math.floor(absLon);
-    if (dmsLonMin) dmsLonMin.value = Math.floor((absLon % 1) * 60);
-    if (dmsLonSec) dmsLonSec.value = ((((absLon % 1) * 60) % 1) * 60).toFixed(1);
-    if (dmsLonDir) dmsLonDir.value = lon >= 0 ? "E" : "W";
+        const dmsLonDeg = el("dmsLonDeg"), dmsLonMin = el("dmsLonMin"), dmsLonSec = el("dmsLonSec"), dmsLonDir = el("dmsLonDir");
+        if (dmsLonDeg) dmsLonDeg.value = Math.floor(absLon);
+        if (dmsLonMin) dmsLonMin.value = Math.floor((absLon % 1) * 60);
+        if (dmsLonSec) dmsLonSec.value = ((((absLon % 1) * 60) % 1) * 60).toFixed(1);
+        if (dmsLonDir) dmsLonDir.value = lon >= 0 ? "E" : "W";
+    }
 }
 
 function calculateResults(lat, lon) {
@@ -382,6 +385,7 @@ function startMeasureFromWaypoint(latlng) {
         .setLatLng(latlng).setContent('0.00 NM <span class="hint">Right-click to finish</span>').addTo(map);
 }
 
+// --- MEASUREMENT LOGIC DRAWINGS ---
 function initMeasure() {
     measurePoints = [];
     measureMarkers = [];
