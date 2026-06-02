@@ -27,12 +27,17 @@ function renderCredits(credits) {
 
 function renderUpdates(updates) {
     const tbody = document.getElementById('updates-tbody');
-    tbody.innerHTML = updates.map(item => `
+    tbody.innerHTML = updates.map((item, index) => {
+        // Set 'active' for the first item (index 0), 'superseded' for the others
+        const displayStatus = index === 0 ? 'Active' : 'Superseded';
+
+        return `
         <tr>
             <td>${item.date}</td>
             <td><span class="version-tag">${item.version}</span></td>
             <td>${item.description}</td>
-            <td>${item.status}</td>
+            <td>${displayStatus}</td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
