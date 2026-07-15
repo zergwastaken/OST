@@ -14,11 +14,9 @@
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
         }
         main { max-width: 1500px; padding: 50px 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-
         /* Inputs & Selects */
         select { background: transparent; color: #f3f3f3; border: none; font-size: 1.08rem; outline: none; cursor: pointer; font-weight: bold; }
         select option, select optgroup { background: #1e2229; color: #fff; }
-
         /* Buttons */
         .btn {
             --bg: rgba(0,0,0,0.75); --border: rgba(255,255,255,0.3); --hover-bg: rgba(255,255,255,0.15); --hover-border: #fff;
@@ -30,9 +28,7 @@
         .reset-btn { --bg: rgba(56, 58, 35, 0.75); --border: rgba(254, 251, 58, 0.3); --hover-bg: rgba(254, 251, 58, 0.15); --hover-border: #fefb3a; }
         .remove-btn { --bg: rgba(58, 35, 40, 0.75); --border: rgba(254, 58, 74, 0.3); --hover-bg: rgba(254, 58, 74, 0.15); --hover-border: #fe3a4a; }
         .save-btn { --bg: rgba(35, 40, 58, 0.75); --border: rgba(58, 122, 254, 0.5); --hover-bg: rgba(58, 122, 254, 0.2); --hover-border: #7bb6ff; }
-
         .icon-btn { padding: 8px 12px; font-size: 1.1rem; }
-
         /* ==================== BEAT MAKER SPECIFIC ==================== */
         .beat-maker-container {
             background: rgba(35, 40, 58, 0.65); border: 2px solid rgba(58, 122, 254, 0.3);
@@ -59,7 +55,6 @@
             opacity: 0; transition: all 0.3s ease; white-space: nowrap; pointer-events: none;
         }
         .status-indicator.show { opacity: 1; transform: translateX(-50%) translateY(-5px); }
-
         .setting-box {
             display: flex; align-items: center; gap: 10px; background: rgba(35, 40, 58, 0.85);
             border: 1.5px solid rgba(58, 122, 254, 0.3); padding: 8px 10px; border-radius: 10px; color: #b3c6ff; font-weight: 600;
@@ -78,7 +73,6 @@
 </head>
 <body>
     <script src="scripts/header-footer.js" defer></script>
-
     <main>
         <div class="beat-maker-container">
             <div class="header">
@@ -106,7 +100,6 @@
                         </select>
                         <button class="btn remove-btn icon-btn" id="delete-btn" style="display: none;" title="Delete Custom Ringtone">🗑️</button>
                     </div>
-
                     <div class="setting-box" id="loop-box">
                         <label>Loops:</label>
                         <select id="loop-selector" style="width: auto;">
@@ -115,7 +108,6 @@
                             <option value="3" selected>3x</option>
                         </select>
                     </div>
-
                     <div class="setting-box" id="bpm-box">
                         <label>BPM:</label>
                         <input type="range" id="bpm" min="60" max="220" value="130">
@@ -131,14 +123,19 @@
             <div id="sequencer"></div>
         </div>
     </main>
-
     <script>
         let audioCtx;
         const instruments = ['Tick', 'Beep', 'Ring', 'Laser', 'Coin', 'Blip', 'Kick', 'Snare', 'Clap', 'Closed Hat', 'Open Hat'];
         const stepsCount = 16;
-        let isPlaying = false, currentStep = 0, currentLoop = 0, maxLoops = 3, bpm = 130, nextNoteTime = 0.0, timerID;
 
+        let isPlaying = false, scheduledStep = 0, visualStep = -1, lastVisualStep = -1, currentLoop = 0, maxLoops = 3, bpm = 130, nextNoteTime = 0.0, schedulerTimerID;
+        
         let grid = instruments.map(() => Array(stepsCount).fill(false));
+        // OPTIMIZATION: Cache step DOM elements to avoid querying them constantly.
+        let stepElementsCache = instruments.map(() => Array(stepsCount).fill(null));
+
+        // OPTIMIZATION: Pre-calculate expensive audio buffers instead of generating them on every note.
+        let snareBuffer, clapBuffer, hatBuffer;
 
         const defaultPresets = {
             "Classic Digital": { type: 'beat', bpm: 130, loops: 3, pattern: { "Beep": [0, 2, 8, 10] } },
@@ -150,47 +147,80 @@
             "House Beat": { type: 'beat', bpm: 125, loops: 2, pattern: { "Kick": [0, 4, 8, 12], "Clap": [4, 12], "Closed Hat": [2, 6, 10, 14], "Open Hat": [14] } }
         };
 
-        const sequencerDiv = document.getElementById('sequencer');
-        const playBtn = document.getElementById('play-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const saveBtn = document.getElementById('save-btn');
-        const deleteBtn = document.getElementById('delete-btn');
-        const bpmSlider = document.getElementById('bpm');
-        const bpmVal = document.getElementById('bpm-val');
-        const loopSelector = document.getElementById('loop-selector');
-        const presetSelector = document.getElementById('preset-selector');
-        const customPresetsGroup = document.getElementById('custom-presets-group');
-        const statusMsg = document.getElementById('status-msg');
-
+        const dom = {
+            sequencerDiv: document.getElementById('sequencer'),
+            playBtn: document.getElementById('play-btn'),
+            clearBtn: document.getElementById('clear-btn'),
+            saveBtn: document.getElementById('save-btn'),
+            deleteBtn: document.getElementById('delete-btn'),
+            bpmSlider: document.getElementById('bpm'),
+            bpmVal: document.getElementById('bpm-val'),
+            loopSelector: document.getElementById('loop-selector'),
+            presetSelector: document.getElementById('preset-selector'),
+            customPresetsGroup: document.getElementById('custom-presets-group'),
+            statusMsg: document.getElementById('status-msg')
+        };
+        
         function showStatus(text, error = false) {
-            statusMsg.textContent = text;
-            statusMsg.style.borderColor = error ? '#ff7b7b' : '#4afe3a';
-            statusMsg.style.color = error ? '#ff7b7b' : '#4afe3a';
-            statusMsg.classList.add('show');
-            setTimeout(() => statusMsg.classList.remove('show'), 2500);
+            dom.statusMsg.textContent = text;
+            dom.statusMsg.style.borderColor = error ? '#ff7b7b' : '#4afe3a';
+            dom.statusMsg.style.color = error ? '#ff7b7b' : '#4afe3a';
+            dom.statusMsg.classList.add('show');
+            setTimeout(() => dom.statusMsg.classList.remove('show'), 2500);
         }
 
-        function createGrid() {
-            sequencerDiv.innerHTML = ''; 
+        function createStep(trackIndex, stepIndex) {
+            const step = document.createElement('div');
+            step.className = 'step';
+            step.dataset.track = trackIndex;
+            step.dataset.step = stepIndex;
+
+            step.addEventListener('click', () => {
+                grid[trackIndex][stepIndex] = !grid[trackIndex][stepIndex];
+                step.classList.toggle('active', grid[trackIndex][stepIndex]);
+            });
+            
+            // OPTIMIZATION: Store reference to the created DOM element.
+            stepElementsCache[trackIndex][stepIndex] = step;
+            return step;
+        }
+
+        function createGridUI() {
+            dom.sequencerDiv.innerHTML = ''; 
             instruments.forEach((inst, i) => {
                 const track = document.createElement('div'); track.className = 'track';
                 const label = document.createElement('div'); label.className = 'track-label'; label.textContent = inst;
                 track.appendChild(label);
-
+                
                 const stepsDiv = document.createElement('div'); stepsDiv.className = 'steps';
                 for (let j = 0; j < stepsCount; j++) {
-                    const step = document.createElement('div'); step.className = 'step';
-                    if (grid[i][j]) step.classList.add('active');
-                    step.dataset.track = i; step.dataset.step = j;
-                    
-                    step.addEventListener('click', () => {
-                        grid[i][j] = !grid[i][j];
-                        step.classList.toggle('active');
-                    });
-                    stepsDiv.appendChild(step);
+                    stepsDiv.appendChild(createStep(i, j));
                 }
-                track.appendChild(stepsDiv); sequencerDiv.appendChild(track);
+                track.appendChild(stepsDiv); 
+                dom.sequencerDiv.appendChild(track);
             });
+        }
+        
+        // --- OPTIMIZED AUDIO SYNTHESIS ---
+
+        function initAudioResources() {
+            if (!audioCtx) return;
+            const bufferSize = audioCtx.sampleRate * 0.5;
+
+            // --- Snare ---
+            snareBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            let data = snareBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            // --- Clap ---
+            clapBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            data = clapBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            
+            // --- Hat ---
+            hatBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            data = hatBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
         }
 
         function playTick(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(2500, t); gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.02); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.02); }
@@ -200,80 +230,97 @@
         function playCoin(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(988, t); osc.frequency.setValueAtTime(1319, t + 0.08); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.2, t + 0.02); gain.gain.setValueAtTime(0.2, t + 0.08); gain.gain.linearRampToValueAtTime(0, t + 0.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.2); }
         function playBlip(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(440, t); gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.1); }
         function playKick(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5); gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5); osc.start(t); osc.stop(t + 0.5); }
-        function playSnare(t) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 1000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); const osc = audioCtx.createOscillator(), oscGain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); oscGain.connect(audioCtx.destination); osc.frequency.setValueAtTime(250, t); oscGain.gain.setValueAtTime(0.5, t); oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.start(t); osc.stop(t + 0.2); }
-        function playClap(t) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1500; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.8, t + 0.01); gain.gain.linearRampToValueAtTime(0, t + 0.04); gain.gain.linearRampToValueAtTime(0.7, t + 0.05); gain.gain.linearRampToValueAtTime(0, t + 0.08); gain.gain.linearRampToValueAtTime(0.6, t + 0.09); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); }
-        function playHat(t, decay) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 10000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + decay); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); }
+        function playSnare(t) { const noise = audioCtx.createBufferSource(); noise.buffer = snareBuffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 1000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); noise.stop(t + 0.2); const osc = audioCtx.createOscillator(), oscGain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); oscGain.connect(audioCtx.destination); osc.frequency.setValueAtTime(250, t); oscGain.gain.setValueAtTime(0.5, t); oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.start(t); osc.stop(t + 0.2); }
+        function playClap(t) { const noise = audioCtx.createBufferSource(); noise.buffer = clapBuffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1500; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.8, t + 0.01); gain.gain.linearRampToValueAtTime(0, t + 0.04); gain.gain.linearRampToValueAtTime(0.7, t + 0.05); gain.gain.linearRampToValueAtTime(0, t + 0.08); gain.gain.linearRampToValueAtTime(0.6, t + 0.09); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); noise.stop(t+0.3); }
+        function playHat(t, decay) { const noise = audioCtx.createBufferSource(); noise.buffer = hatBuffer; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 10000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + decay); noise.connect(filter).connect(gain).connect(audioCtx.destination); noise.start(t); noise.stop(t+decay); }
         function playClosedHat(t) { playHat(t, 0.05); }
         function playOpenHat(t) { playHat(t, 0.3); }
 
         const soundMakers = [playTick, playBeep, playRing, playLaser, playCoin, playBlip, playKick, playSnare, playClap, playClosedHat, playOpenHat];
 
         // --- SCHEDULING LOGIC ---
+
         function stopAlarm() {
             isPlaying = false;
-            playBtn.textContent = 'TEST ALARM'; playBtn.classList.remove('remove-btn'); playBtn.classList.add('start-btn');
-            clearTimeout(timerID);
-            requestAnimationFrame(() => document.querySelectorAll('.step').forEach(el => el.classList.remove('current')));
+            dom.playBtn.textContent = 'TEST ALARM'; dom.playBtn.classList.remove('remove-btn'); dom.playBtn.classList.add('start-btn');
+            clearTimeout(schedulerTimerID);
+            visualStep = -1; // Reset visual step
         }
 
         function nextNote() {
             nextNoteTime += 0.25 * (60.0 / bpm);
-            currentStep++;
-            if (currentStep === stepsCount) {
-                currentStep = 0; currentLoop++;
+            scheduledStep++;
+            if (scheduledStep === stepsCount) {
+                scheduledStep = 0; currentLoop++;
                 if (currentLoop >= maxLoops) { stopAlarm(); return false; }
             }
             return true;
         }
 
-        function scheduler() {
+        function audioScheduler() {
             while (nextNoteTime < audioCtx.currentTime + 0.1 && isPlaying) {
-                const stepNum = currentStep;
-                requestAnimationFrame(() => {
-                    if(!isPlaying) return; 
-                    document.querySelectorAll('.step').forEach(el => el.classList.remove('current'));
-                    document.querySelectorAll(`.step[data-step="${stepNum}"]`).forEach(el => el.classList.add('current'));
-                });
-                instruments.forEach((_, trackIndex) => { if (grid[trackIndex][stepNum]) soundMakers[trackIndex](nextNoteTime); });
+                visualStep = scheduledStep; // Update which step should be highlighted
+                instruments.forEach((_, trackIndex) => { if (grid[trackIndex][scheduledStep]) soundMakers[trackIndex](nextNoteTime); });
                 if (!nextNote()) break; 
             }
-            if (isPlaying) timerID = setTimeout(scheduler, 25.0);
+            if (isPlaying) schedulerTimerID = setTimeout(audioScheduler, 25.0);
         }
 
-        playBtn.addEventListener('click', () => {
-            if (isPlaying) { stopAlarm(); return; }
-            
-            isPlaying = true;
-            playBtn.textContent = 'STOP ALARM'; playBtn.classList.remove('start-btn'); playBtn.classList.add('remove-btn');
-
+        // OPTIMIZATION: Dedicated visual loop using requestAnimationFrame for smooth animation.
+        function visualScheduler(timestamp) {
+            if (visualStep !== lastVisualStep) {
+                if (lastVisualStep !== -1) {
+                    stepElementsCache.forEach(track => track[lastVisualStep]?.classList.remove('current'));
+                }
+                if (visualStep !== -1) {
+                    stepElementsCache.forEach(track => track[visualStep]?.classList.add('current'));
+                }
+                lastVisualStep = visualStep;
+            }
+            if (!isPlaying && lastVisualStep !== -1) {
+                stepElementsCache.forEach(track => track[lastVisualStep]?.classList.remove('current'));
+                lastVisualStep = -1;
+            }
+            requestAnimationFrame(visualScheduler);
+        }
+        
+        function initAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            currentLoop = 0; currentStep = 0; 
+            if (!snareBuffer) initAudioResources(); // Only create buffers once
+        }
+
+        dom.playBtn.addEventListener('click', () => {
+            if (isPlaying) { stopAlarm(); return; }
+            
+            initAudioContext();
+            isPlaying = true;
+            dom.playBtn.textContent = 'STOP ALARM'; dom.playBtn.classList.remove('start-btn'); dom.playBtn.classList.add('remove-btn');
+            
+            currentLoop = 0; scheduledStep = 0; 
             nextNoteTime = audioCtx.currentTime + 0.05;
-            scheduler();
+            audioScheduler();
         });
 
-        // --- LOCAL STORAGE LOGIC ---
+        // --- LOCAL STORAGE & PATTERN LOGIC ---
+        
         function getCustomSaves() { return JSON.parse(localStorage.getItem('os_tools_beats')) || {}; }
 
         function loadCustomSavesToUI() {
             const saves = getCustomSaves();
-            customPresetsGroup.innerHTML = '';
+            dom.customPresetsGroup.innerHTML = '';
             
-            if(Object.keys(saves).length === 0) customPresetsGroup.style.display = 'none';
-            else {
-                customPresetsGroup.style.display = 'block';
-                for (const name in saves) {
-                    const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.textContent = `💾 ${name}`;
-                    customPresetsGroup.appendChild(opt);
-                }
+            dom.customPresetsGroup.style.display = Object.keys(saves).length === 0 ? 'none' : 'block';
+            for (const name in saves) {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = `💾 ${name}`;
+                dom.customPresetsGroup.appendChild(opt);
             }
-
+            
             const activeBeat = localStorage.getItem('os_tools_active_beat');
             if (activeBeat && (saves[activeBeat] || defaultPresets[activeBeat])) {
-                presetSelector.value = activeBeat;
+                dom.presetSelector.value = activeBeat;
                 loadPatternData(activeBeat);
             } else {
                 loadPatternData("Classic Digital"); 
@@ -285,24 +332,29 @@
             const p = saves[presetName] || defaultPresets[presetName];
             if (!p) return;
 
-            bpm = p.bpm || 130; bpmSlider.value = bpm; bpmVal.textContent = bpm;
-            maxLoops = p.loops || 3; loopSelector.value = maxLoops;
+            bpm = p.bpm || 130; dom.bpmSlider.value = bpm; dom.bpmVal.textContent = bpm;
+            maxLoops = p.loops || 3; dom.loopSelector.value = maxLoops;
             
+            // OPTIMIZATION: Update the grid data model first, then iterate through cached elements to update UI.
             grid = instruments.map(() => Array(stepsCount).fill(false));
-            if(p.pattern) {
+            if (p.pattern) {
                 for (const [instName, steps] of Object.entries(p.pattern)) {
                     const instIndex = instruments.indexOf(instName);
                     if (instIndex !== -1) steps.forEach(step => grid[instIndex][step] = true);
                 }
             }
-            createGrid();
 
-            // Show/Hide Delete button based on if it's a custom save
-            deleteBtn.style.display = saves[presetName] ? 'inline-block' : 'none';
+            stepElementsCache.forEach((track, i) => {
+                track.forEach((stepEl, j) => {
+                    stepEl?.classList.toggle('active', grid[i][j]);
+                });
+            });
+
+            dom.deleteBtn.style.display = saves[presetName] ? 'inline-block' : 'none';
         }
 
         // --- EVENT LISTENERS ---
-        presetSelector.addEventListener('change', (e) => {
+        dom.presetSelector.addEventListener('change', (e) => {
             const selected = e.target.value;
             localStorage.setItem('os_tools_active_beat', selected);
             loadPatternData(selected);
@@ -310,47 +362,41 @@
             if(isPlaying) stopAlarm();
         });
 
-        clearBtn.addEventListener('click', () => {
+        dom.clearBtn.addEventListener('click', () => {
             grid = instruments.map(() => Array(stepsCount).fill(false));
-            createGrid(); 
+            stepElementsCache.forEach(track => track.forEach(step => step?.classList.remove('active')));
         });
 
-        // Delete Custom Ringtone
-        deleteBtn.addEventListener('click', () => {
-            const selected = presetSelector.value;
+        dom.deleteBtn.addEventListener('click', () => {
+            const selected = dom.presetSelector.value;
             const saves = getCustomSaves();
-            if (saves[selected]) {
-                if(confirm(`Are you sure you want to delete "${selected}"?`)) {
-                    delete saves[selected];
-                    localStorage.setItem('os_tools_beats', JSON.stringify(saves));
-                    localStorage.setItem('os_tools_active_beat', 'Classic Digital');
-                    loadCustomSavesToUI();
-                    showStatus(`🗑️ Deleted ${selected}`, true);
-                    if(isPlaying) stopAlarm();
-                }
+            if (saves[selected] && confirm(`Are you sure you want to delete "${selected}"?`)) {
+                delete saves[selected];
+                localStorage.setItem('os_tools_beats', JSON.stringify(saves));
+                localStorage.setItem('os_tools_active_beat', 'Classic Digital');
+                loadCustomSavesToUI();
+                showStatus(`🗑️ Deleted ${selected}`, true);
+                if(isPlaying) stopAlarm();
             }
         });
 
-        // Save Custom Beat
-        saveBtn.addEventListener('click', () => {
+        dom.saveBtn.addEventListener('click', () => {
             const name = prompt("Name your custom alarm:");
             if (!name || name.trim() === "") return;
 
             let patternToSave = {};
-            instruments.forEach((inst, i) => {
-                let activeSteps = [];
-                for(let j=0; j<stepsCount; j++) { if(grid[i][j]) activeSteps.push(j); }
-                if(activeSteps.length > 0) patternToSave[inst] = activeSteps;
+            grid.forEach((track, i) => {
+                const activeSteps = track.reduce((acc, val, j) => val ? [...acc, j] : acc, []);
+                if (activeSteps.length > 0) patternToSave[instruments[i]] = activeSteps;
             });
 
             const saves = getCustomSaves();
             saves[name] = {
                 type: 'beat',
-                bpm: parseInt(bpmSlider.value),
-                loops: parseInt(loopSelector.value),
+                bpm: parseInt(dom.bpmSlider.value),
+                loops: parseInt(dom.loopSelector.value),
                 pattern: patternToSave
             };
-
             localStorage.setItem('os_tools_beats', JSON.stringify(saves));
             localStorage.setItem('os_tools_active_beat', name); 
             
@@ -358,10 +404,15 @@
             showStatus(`✅ Saved & Set as active alarm!`);
         });
 
-        bpmSlider.addEventListener('input', (e) => { bpm = e.target.value; bpmVal.textContent = bpm; });
-        loopSelector.addEventListener('change', (e) => { maxLoops = parseInt(e.target.value); });
-
+        dom.bpmSlider.addEventListener('input', (e) => { bpm = e.target.value; dom.bpmVal.textContent = bpm; });
+        dom.loopSelector.addEventListener('change', (e) => { maxLoops = parseInt(e.target.value); });
+        
+        // --- INITIALIZATION ---
+        createGridUI();
         loadCustomSavesToUI();
+        requestAnimationFrame(visualScheduler); // Start the visual update loop
+        document.body.addEventListener('click', initAudioContext, { once: true }); // Unlock audio on first user interaction
+
     </script>
 </body>
 </html>
