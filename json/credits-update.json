@@ -2,7 +2,7 @@
   "credits": [
     {
       "role": "Project Lead",
-      "name": "OS3 D. Grinager",
+      "name": "<a class=\"zerg\" href=\"dmg.html\">OS3 D. Grinager</a>",
       "focus": "Systems Architecture & Code Development"
     },
     {
@@ -52,6 +52,11 @@
     }
   ],
   "updates": [
+    {
+      "date": "07JUL26",
+      "version": "v2.5.0",
+      "description": "<b>Update To Timer:</b> Redid the front end of the preset timer conditions and also added the ability to add an Alarm Rather than a timer. ( Also added a fun little option to create your own timer ringtone at the bottom of the page.)"
+    },
     {
       "date": "02JUN26",
       "version": "v2.4.1",
