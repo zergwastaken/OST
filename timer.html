@@ -12,54 +12,70 @@
     <script src="scripts/header-footer.js" defer></script>
     <main id="main">
         <h1 class="home-title">MULTI TIMER</h1>
+
         <p class="home-subtitle">Track multiple operations simultaneously with our Multi Timer tool.</p>
-        <div class="preset-btns">
-            <button class="btn preset-btn" onclick="presetTimer(1)">
-                <h3>🚢 Cutter Timer</h3>
-                <p>(4 hours)</p>
-            </button>
-            <button class="btn preset-btn" onclick="presetTimer(2)">
-                <h3>✈️ Fixed Wing Aircraft Timer</h3>
-                <p>(30 minutes)</p>
-            </button>
-            <button class="btn preset-btn" onclick="presetTimer(3)">
-                <h3>🚤 Small Boat Timer</h3>
-                <p>(30 Minutes)</p>
-            </button>
-            <button class="btn preset-btn" onclick="presetTimer(4)">
-                <h3>🚁 Rotary Aircraft Timer</h3>
-                <p>(15 minutes)</p>
-            </button>
-            <button class="btn preset-btn" onclick="createCustomTimer()">
-                <h3>⏲️ Custom Timer</h3>
-                <p>(Set Duration)</p>
-            </button>
-        </div>
-        <div class="timer-config">
-            <div class="segmented-control" id="startAlignControl" role="tablist">
-                <input type="radio" id="align_prev" name="startAlign" value="prev">
-                <label for="align_prev">Previous min</label>
-
-                <input type="radio" id="align_immediate" name="startAlign" value="immediate" checked>
-                <label for="align_immediate">Immediate</label>
-
-                <input type="radio" id="align_next" name="startAlign" value="next">
-                <label for="align_next">Following min</label>
-            </div>
-            <p class="small-text">Choose when new timers start: immediately or aligned to a tick.</p>
-        </div>
-        <div id="timers-container">
-            <!-- <div class="timer-card">
-                <h1>⏲️</h1>
-                <h2>Timer 1</h2>
-                <h2 class="timer-display">00:00:00</h2>
-                <div class="timer-controls">
-                    <button class="btn start-btn" data-timer="1">Start</button>
-                    <button class="btn reset-btn" data-timer="1">Reset</button>
-                    <button class="btn remove-btn" data-timer="1">Remove</button>
+        <!-- SLEEK DASHBOARD LAYOUT -->
+        <!-- UNIFIED DASHBOARD LAYOUT -->
+        <div class="dashboard-wrapper">
+            
+            <div class="dashboard-panel">
+                <!-- Left Side: Coast Guard Presets -->
+                <div class="panel-section">
+                    <div class="panel-label">QUICK DEPLOY PRESETS</div>
+                    <div class="btn-grid presets-grid">
+                        <button class="btn compact-btn preset-btn" onclick="presetTimer(1)">
+                            <h3>🚢 Cutter</h3>
+                            <p>4 Hours</p>
+                        </button>
+                        <button class="btn compact-btn preset-btn" onclick="presetTimer(2)">
+                            <h3>✈️ Fixed Wing</h3>
+                            <p>30 Mins</p>
+                        </button>
+                        <button class="btn compact-btn preset-btn" onclick="presetTimer(3)">
+                            <h3>🚤 Small Boat</h3>
+                            <p>30 Mins</p>
+                        </button>
+                        <button class="btn compact-btn preset-btn" onclick="presetTimer(4)">
+                            <h3>🚁 Rotary Wing</h3>
+                            <p>15 Mins</p>
+                        </button>
+                    </div>
                 </div>
-            </div> -->
+
+                <!-- Right Side: Custom Actions -->
+                <div class="panel-section highlight-section">
+                    <div class="panel-label">CUSTOM OPERATIONS</div>
+                    <div class="btn-grid custom-grid">
+                        <button class="btn compact-btn custom-action-btn" onclick="createCustomTimer()">
+                            <h3>⏲️ Countdown</h3>
+                            <p>Set Duration</p>
+                        </button>
+                        <button class="btn compact-btn custom-action-btn" onclick="createCustomAlarm()">
+                            <h3>⏰ Time of Day</h3>
+                            <p>Target Alarm</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrated Alignment Toolbar -->
+            <div class="dashboard-toolbar">
+                <span class="toolbar-label">⚙️ Timer Alignment Rules:</span>
+                <div class="segmented-control" id="startAlignControl" role="tablist">
+                    <input type="radio" id="align_prev" name="startAlign" value="prev">
+                    <label for="align_prev">Prev Min</label>
+                    
+                    <input type="radio" id="align_immediate" name="startAlign" value="immediate" checked>
+                    <label for="align_immediate">Immediate</label>
+                    
+                    <input type="radio" id="align_next" name="startAlign" value="next">
+                    <label for="align_next">Next Min</label>
+                </div>
+            </div>
+            
         </div>
+
+    <div id="timers-container"></div>
     </main>
 
     <!-- Custom Timer Popup -->
@@ -107,27 +123,34 @@
             </div>
         </div>
     </div>
-
-    <div id="myModal">
-        <!-- <div class="overduetimer">
-            <h1>⏲️</h1>
-            <h2>Timer 1</h2>
-            <h2 class="timer-display">00:00:00</h2>
-            <div class="timer-controls">
-                <button class="btn start-btn" data-timer="1">Restart</button>
-                <button class="btn reset-btn" data-timer="1">Reset</button>
-                <button class="btn remove-btn" data-timer="1">Remove</button>
+    
+    <!-- Custom Alarm Popup -->
+    <div id="customAlarmModal" class="custom-modal" aria-hidden="true">
+        <div class="custom-modal-content">
+            <h2>Set Alarm Time</h2>
+            <div class="form-row">
+                <label for="customAlarmName">Name</label>
+                <input id="customAlarmName" type="text" maxlength="40" placeholder="Alarm name" value="Alarm">
             </div>
-        </div> -->
+            <div class="form-row">
+                <label for="customAlarmEmoji">Emoji</label>
+                <input id="customAlarmEmoji" type="text" maxlength="2" placeholder="⏰" value="⏰">
+            </div>
+            <div class="form-row">
+                <label for="customAlarmTime">Target Time</label>
+                <input id="customAlarmTime" type="time" required style="width: 100%; font-size: 1.5rem; text-align: center; cursor: pointer;">
+            </div>
+            <div class="modal-actions">
+                <button id="createCustomAlarmBtn" class="btn start-btn">Set Alarm</button>
+                <button id="cancelCustomAlarmBtn" class="btn remove-btn">Cancel</button>
+            </div>
+        </div>
     </div>
-    <!-- <footer class="main-footer">
-        <p>Made By OS3 D. GRINAGER</p>
-        <p>© 2026 Operations Specialist Tools. Licensed under the MIT License.</p>
-    </footer> -->
+
+    <div id="myModal"></div>
+
     <script src="scripts/modal.js"></script>
     <script src="scripts/timer.js"></script>
     <script src="scripts/refresh.js"></script>
-
-    <!-- <script src="scripts/timebar.js"></script> -->
 </body>
 </html>
