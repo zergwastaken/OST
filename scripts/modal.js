@@ -1,15 +1,5 @@
 let expiredTimers = [];
-
-// Get the modal
 const modal = document.getElementById("myModal");
-
-
-// // When the user clicks anywhere outside of the modal, close it
-// window.onclick = function(event) {
-// 	if (event.target == modal) {
-// 		modal.style.display = "none";
-// 	}
-// }
 
 var generateModal = function(array){
     const newTimers = array.filter(timer => !expiredTimers.some(existing => existing.timerid === timer.timerid));
@@ -122,6 +112,7 @@ function createExpiredTimerCard( currentTimer ){
         // Reset and move back to active timers
         let index = expiredTimers.indexOf(currentTimer);
         if (index !== -1) {
+            try { window.stopActiveAlarm(); } catch(e) {}
             expiredTimers.splice(index, 1);
             // Clear expired state and reset timer state so it persists
             currentTimer.expired = false;
@@ -150,6 +141,8 @@ function createExpiredTimerCard( currentTimer ){
         // Remove from expired timers
         let index = expiredTimers.indexOf(currentTimer);
         if (index !== -1) {
+            try { window.stopActiveAlarm(); } catch(e) {}
+
             expiredTimers.splice(index, 1);
             modal.innerHTML = ''; // Clear modal
             if (expiredTimers.length > 0) {
