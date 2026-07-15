@@ -45,13 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (showFooter) {
         const footerHTML = `
         <footer class="main-footer">
-            <!-- <p>Built with <a href="credits.html"> RAHHHH ❤️</a> for the fleet</p> -->
             <span>
-                <a href="pixel.html" class="linkera tooltip" data-tooltip="pixel drawing">🎨</a>
+                <a href="pixel.html" class="linkera tooltip" data-tooltip="minigames">🧩</a>
                 -
                 <a href="credits.html" class="linkera tooltip" data-tooltip="credits & updates">❤️</a>
                 -
-                <a href="sar-le-game.html" class="linkera tooltip" data-tooltip="sar/le game!">🚨</a>
+                <a href="ringtone.html" class="linkera tooltip" data-tooltip="custom timer ringtone!">🔊</a>
             </span>
             <!-- <p>© 2026 Operations Specialist Tools. Licensed under the MIT License.</p> -->
         </footer>`;
