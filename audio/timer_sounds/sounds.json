@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Alarm",
+    "src": "alarm.mp3"
+  },
+  {
+    "name": "Quack",
+    "src": "quack.m4a"
+  },
+  {
+    "name": "Shleep",
+    "src": "shleep.m4a"
+  }
+]

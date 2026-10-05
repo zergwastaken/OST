@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="images/logo.png">
-    <title>OS Tools - Coordinate Plotter</title>
+    <title>OS Tools - Map Tools</title>
     
     <!-- Leaflet Map CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -27,11 +27,21 @@
 
 <div class="converter-container">
     <div class="header">
-        <h1>Coordinate Plotter</h1>
-        <p>Drop a pin, drag it to fine-tune, or right-click for quick actions.</p>
+        <h1>Map Tools</h1>
+        <button id="togglePlotterPanel" class="plotter-panel-toggle" type="button" aria-expanded="true" aria-controls="plotterPanelContent">Hide controls</button>
+        <p>Convert coordinates, plot boundaries, and measure routes.</p>
     </div>
+    <div id="plotterPanelContent" class="plotter-panel-content">
+    <div class="tool-tabs" role="tablist" aria-label="Map tools">
+        <button id="coordinatesTab" class="tool-tab" type="button" role="tab" aria-selected="true" aria-controls="coordinatesPanel" tabindex="0">Coordinates</button>
+        <button id="pinTab" class="tool-tab" type="button" role="tab" aria-selected="false" aria-controls="pinPanel" tabindex="-1">Map pin</button>
+        <button id="boundaryTab" class="tool-tab" type="button" role="tab" aria-selected="false" aria-controls="boundaryPanel" tabindex="-1">Boundary</button>
+        <button id="navigationTab" class="tool-tab" type="button" role="tab" aria-selected="false" aria-controls="navigationPanel" tabindex="-1">Navigation</button>
+    </div>
+    <div class="tool-panels">
+    <section id="coordinatesPanel" class="tool-panel" role="tabpanel" aria-labelledby="coordinatesTab" tabindex="0">
     <div class="instruction-box" style="font-size: 0.9em;">
-        🖱️ Click to drop pin | 🖐️ Drag pin to move | 🖱️ Right-click pin for options
+        Click anywhere on the map to place a pin, then drag it to adjust.
     </div>
 
     <div class="input-group">
@@ -108,6 +118,64 @@
             <div><span class="result-label">DMS</span><br><span id="resDMS" class="result-value">-- --</span></div>
             <button class="btn-copy" onclick="copyResult('resDMS', this)">Copy</button>
         </div>
+    </div>
+    </section>
+
+    <section id="pinPanel" class="pin-actions tool-panel" role="tabpanel" aria-labelledby="pinTab" tabindex="0" hidden>
+        <h2 id="pinActionsTitle">Current map pin</h2>
+        <div class="pin-action-buttons">
+            <button id="copyPinBtn" type="button" disabled>Copy DDM</button>
+            <button id="measureFromPinBtn" type="button" disabled>Measure from pin</button>
+            <button id="clearPinBtn" type="button" disabled>Clear pin</button>
+        </div>
+        <p id="pinActionStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="boundaryPanel" class="boundary-tool tool-panel" role="tabpanel" aria-labelledby="boundaryTab" tabindex="0" hidden>
+        <h2 id="boundaryToolTitle">Plot a coordinate boundary</h2>
+        <p>Paste one pair per line. The plotter detects decimal degrees, degrees and decimal minutes, or degrees-minutes-seconds. Use commas, spaces, or hyphens between values; N/S/E/W directions are supported.</p>
+        <label for="boundaryCoordinates">Coordinates</label>
+        <textarea id="boundaryCoordinates" rows="4" placeholder="38.123456, -76.123456&#10;38.234567, -76.234567&#10;38.345678, -76.123456"></textarea>
+        <p id="boundaryPointCount" class="boundary-point-count">0 coordinate lines</p>
+        <div class="boundary-draw-actions">
+            <button id="startBoundaryDrawingBtn" type="button" aria-pressed="false">Draw boundary on map</button>
+            <button id="undoBoundaryPointBtn" type="button" disabled>Undo point</button>
+            <button id="finishBoundaryDrawingBtn" type="button" disabled>Finish boundary</button>
+        </div>
+        <p id="boundaryDrawStatus" class="boundary-status" role="status" aria-live="polite">Or click “Draw boundary on map” and add points directly on the map.</p>
+        <div class="boundary-actions">
+            <button id="plotBoundaryBtn" type="button">Plot boundary</button>
+            <button id="clearBoundaryBtn" type="button" disabled>Clear boundary</button>
+            <label for="boundaryFormat">Copy as</label>
+            <select id="boundaryFormat">
+                <option value="DDM">DDM</option>
+                <option value="DD">Decimal degrees</option>
+                <option value="DMS">DMS</option>
+            </select>
+            <button id="copyBoundaryBtn" type="button" disabled>Copy coordinates</button>
+        </div>
+        <div class="boundary-metrics" aria-live="polite">
+            <p>Perimeter: <strong id="boundaryPerimeterNM">—</strong> NM / <strong id="boundaryPerimeterMI">—</strong> mi</p>
+            <p>Approx. area: <strong id="boundaryAreaSqNM">—</strong> sq NM / <strong id="boundaryAreaSqMI">—</strong> sq mi</p>
+        </div>
+        <p id="boundaryStatus" class="boundary-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="navigationPanel" class="navigation-tool tool-panel" role="tabpanel" aria-labelledby="navigationTab" tabindex="0" hidden>
+        <h2 id="navigationToolTitle">Point-to-point navigation</h2>
+        <p>Enter two coordinate pairs in any supported format to calculate initial bearing and distance.</p>
+        <label for="navigationPointA">Point A</label>
+        <input id="navigationPointA" type="text" placeholder="38-12-3' N / 076-12-3' W">
+        <label for="navigationPointB">Point B</label>
+        <input id="navigationPointB" type="text" placeholder="38.234567, -76.234567">
+        <button id="calculateNavigationBtn" type="button">Calculate bearing &amp; distance</button>
+        <div class="navigation-results" aria-live="polite">
+            <p>Initial bearing: <strong id="navigationBearing">—</strong></p>
+            <p>Distance: <strong id="navigationDistanceNM">—</strong> NM / <strong id="navigationDistanceMI">—</strong> mi</p>
+        </div>
+        <p id="navigationStatus" class="navigation-status" role="status" aria-live="polite"></p>
+    </section>
+    </div>
     </div>
 </div>
 

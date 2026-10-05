@@ -72,10 +72,21 @@
                     <label for="align_next">Next Min</label>
                 </div>
             </div>
+
+            <div class="dashboard-toolbar timer-sound-toolbar">
+                <label class="toolbar-label" for="timerSoundSelect">🔔 Timer Alarm Sound:</label>
+                <div class="timer-sound-controls">
+                    <select id="timerSoundSelect" aria-label="Timer alarm sound">
+                        <option value="">Loading sounds…</option>
+                    </select>
+                    <button id="previewTimerSoundBtn" class="btn compact-btn" type="button" aria-pressed="false">▶ Preview</button>
+                </div>
+            </div>
             
         </div>
 
     <div id="timers-container"></div>
+    <p id="timerStorageStatus" class="timer-storage-status" role="status" aria-live="polite"></p>
     </main>
 
     <!-- Custom Timer Popup -->

@@ -9,7 +9,10 @@
 }
 
 .leaflet-control-attribution {
-    display: none !important;
+    max-width: min(70vw, 420px);
+    color: #172033;
+    background: rgba(255, 255, 255, 0.88) !important;
+    font-size: 11px;
 }
 
 body { margin: 0; padding: 0; font-family: sans-serif; color: var(--text-light); overflow: hidden; }
@@ -26,12 +29,89 @@ body { margin: 0; padding: 0; font-family: sans-serif; color: var(--text-light);
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     width: 450px;
+    max-height: calc(100vh - 140px);
+    max-height: calc(100dvh - 140px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
     padding: 25px;
     backdrop-filter: blur(5px);
 }
 
+.converter-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.converter-container::-webkit-scrollbar-thumb {
+    background: #52647e;
+    border: 2px solid rgba(10, 25, 47, 0.95);
+    border-radius: 8px;
+}
+
+.converter-container {
+    scrollbar-color: #52647e rgba(10, 25, 47, 0.95);
+    scrollbar-width: thin;
+}
+
 .header h1 { margin: 0; font-size: 1.5rem; text-transform: uppercase; color: var(--cg-orange); }
 .header p { margin: 5px 0 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+
+.plotter-panel-toggle {
+    display: none;
+}
+
+.plotter-panel-content[hidden] {
+    display: none !important;
+}
+
+.tool-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-color);
+    scrollbar-width: thin;
+}
+
+.tool-tab {
+    flex: 1 0 auto;
+    min-height: 44px;
+    padding: 8px 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.tool-tab:hover {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.tool-tab[aria-selected="true"] {
+    color: #0a192f;
+    background: #dbeafe;
+    border-color: #dbeafe;
+}
+
+.tool-tab:focus-visible {
+    outline: 3px solid #ffd166;
+    outline-offset: 2px;
+}
+
+.tool-panel {
+    min-width: 0;
+}
+
+.tool-panel[hidden] {
+    display: none !important;
+}
 
 .input-group { margin-bottom: 15px; }
 .input-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); }
@@ -47,6 +127,233 @@ input:focus { outline: none; border-color: var(--cg-orange); }
 
 .btn-copy { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; }
 .instruction-box { font-size: 0.75rem; color: var(--cg-orange); background: rgba(255,59,0,0.1); padding: 8px; border-radius: 4px; margin-bottom: 15px; text-align: center; border: 1px dashed var(--cg-orange); }
+
+.boundary-tool {
+    margin: 20px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.boundary-tool h2 {
+    margin: 0 0 6px;
+    color: var(--cg-orange);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.boundary-tool p {
+    margin: 0 0 12px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.boundary-tool label {
+    display: block;
+    margin: 8px 0 4px;
+    font-size: 0.9rem;
+}
+
+.boundary-tool textarea {
+    display: block;
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    color: var(--text-light);
+    background: var(--navy-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    font-family: inherit;
+    font: 0.9rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.boundary-tool textarea:focus,
+.boundary-actions select:focus,
+.boundary-actions button:focus-visible,
+.boundary-draw-actions button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    border-color: #fff;
+}
+
+.boundary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.boundary-draw-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.boundary-actions label {
+    margin: 0;
+}
+
+.boundary-actions select,
+.boundary-actions button,
+.boundary-draw-actions button {
+    min-height: 42px;
+    padding: 8px 12px;
+    color: var(--text-light);
+    background: var(--navy-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.boundary-actions button,
+.boundary-draw-actions button {
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.boundary-actions button:hover:not(:disabled) {
+    border-color: var(--cg-orange);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.boundary-draw-actions button:hover:not(:disabled) {
+    border-color: var(--cg-orange);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.boundary-actions #plotBoundaryBtn {
+    color: #0a192f;
+    background: var(--cg-orange);
+    border-color: var(--cg-orange);
+    font-weight: 700;
+}
+
+.boundary-actions #plotBoundaryBtn:hover {
+    background: #dbeafe;
+}
+
+.boundary-actions button:disabled,
+.boundary-draw-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.boundary-draw-actions #startBoundaryDrawingBtn[aria-pressed="true"] {
+    color: #0a192f;
+    background: #ffd166;
+    border-color: #ffd166;
+    font-weight: 700;
+}
+
+.boundary-drawing-mode {
+    cursor: crosshair !important;
+}
+
+.boundary-status {
+    min-height: 1.25em;
+    margin: 10px 0 0 !important;
+    color: var(--text-muted) !important;
+}
+
+.pin-actions,
+.navigation-tool {
+    margin: 20px 0 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.pin-actions h2,
+.navigation-tool h2 {
+    margin: 0 0 6px;
+    color: var(--cg-orange);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.pin-actions > p,
+.navigation-tool > p {
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.pin-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pin-action-buttons button,
+.navigation-tool button {
+    min-height: 42px;
+    padding: 8px 12px;
+    color: var(--text-light);
+    background: var(--navy-blue);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.pin-action-buttons button:hover:not(:disabled),
+.navigation-tool button:hover {
+    border-color: var(--cg-orange);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.pin-action-buttons button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.boundary-point-count {
+    margin: 6px 0 0 !important;
+    font-size: 0.8rem !important;
+}
+
+.boundary-metrics,
+.navigation-results {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--navy-blue);
+    border-left: 3px solid var(--cg-orange);
+    border-radius: 0 4px 4px 0;
+}
+
+.boundary-metrics p,
+.navigation-results p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.navigation-tool input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 4px 0 10px;
+}
+
+.navigation-tool button {
+    width: 100%;
+    font-weight: 700;
+}
+
+.navigation-status {
+    min-height: 1.25em;
+}
 
 
 /* Custom UI Styling for the Map Controls */
@@ -145,4 +452,165 @@ input:focus { outline: none; border-color: var(--cg-orange); }
 }
 .custom-context-menu li:not(:last-child) {
     border-bottom: 1px solid #eee;
+}
+
+@media (max-width: 700px) {
+    #map {
+        width: 100%;
+        height: 100%;
+        height: 100dvh;
+    }
+
+    .converter-container {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 76px);
+        left: 8px;
+        width: calc(100% - 16px);
+        max-width: 450px;
+        max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 88px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 16px;
+        z-index: 998;
+    }
+
+    .tool-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        overflow: visible;
+    }
+
+    .tool-tab {
+        min-width: 0;
+        white-space: normal;
+    }
+
+    .boundary-actions > button:first-child {
+        flex: 1 1 100%;
+    }
+
+    .boundary-draw-actions button {
+        flex: 1 1 100%;
+    }
+
+    .boundary-actions > button:nth-child(2) {
+        flex: 1 1 100%;
+    }
+
+    .boundary-actions select {
+        flex: 1 1 100px;
+    }
+
+    .boundary-actions > button:last-child {
+        flex: 1 1 100%;
+    }
+
+    .converter-container.is-collapsed {
+        width: auto;
+        max-width: calc(100% - 16px);
+        max-height: none;
+        overflow: visible;
+        padding: 10px 12px;
+    }
+
+    .converter-container .header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .converter-container .header h1 {
+        font-size: 1rem;
+    }
+
+    .converter-container .header p {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+
+    .plotter-panel-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        color: var(--text-light);
+        background: #172a45;
+        border: 1px solid #8892b0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .plotter-panel-toggle:focus-visible {
+        outline: 3px solid #ffd700;
+        outline-offset: 2px;
+    }
+
+    .converter-container.is-collapsed .header p {
+        display: none;
+    }
+
+    .input-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .input-row input {
+        flex: 1 1 62px;
+        min-width: 0;
+        width: auto;
+    }
+
+    .input-row select {
+        flex: 0 0 64px;
+        width: 64px !important;
+        min-width: 0;
+        padding-right: 4px;
+        padding-left: 8px;
+    }
+
+    .result-box {
+        min-width: 0;
+        gap: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    .result-box > div {
+        min-width: 0;
+    }
+
+    .result-value {
+        font-size: clamp(0.8rem, 4vw, 1rem);
+        overflow-wrap: anywhere;
+    }
+
+    .btn-copy {
+        flex: 0 0 auto;
+        min-width: 58px;
+        min-height: 44px;
+    }
+
+    .custom-context-menu {
+        max-width: calc(100vw - 16px);
+    }
+}
+
+@media (max-width: 360px) {
+    .converter-container {
+        left: 6px;
+        width: calc(100% - 12px);
+        padding: 12px;
+    }
+
+    .header h1 {
+        font-size: 1.25rem;
+    }
+
+    .input-row input {
+        flex-basis: 54px;
+    }
 }

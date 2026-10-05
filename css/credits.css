@@ -12,6 +12,13 @@
     max-width: 900px;
 }
 
+.zerg {
+    color: var(--cg-orange);
+        text-transform: uppercase;
+    font
+
+}
+
 h2 {
     color: var(--cg-orange);
     text-transform: uppercase;

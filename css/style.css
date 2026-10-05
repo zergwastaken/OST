@@ -140,6 +140,44 @@ input[type="number"] {
     align-items: center;
 }
 
+.nav-toggle {
+    display: none;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(58, 122, 254, 0.15);
+    border: 1px solid rgba(123, 182, 255, 0.65);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.nav-toggle-icon,
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+}
+
+.nav-toggle-icon {
+    position: relative;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+    position: absolute;
+    left: 0;
+    content: "";
+}
+
+.nav-toggle-icon::before { top: -7px; }
+.nav-toggle-icon::after { top: 7px; }
+
 .nav-link {
     color: #b3c6ff;
     text-decoration: none;
@@ -169,10 +207,82 @@ input[type="number"] {
     display: inline-block;
 }
 
+@media (max-width: 900px) {
+    .nav-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        padding: 10px 16px;
+    }
+
+    .nav-brand {
+        flex: 1 1 0;
+        min-width: 0;
+        justify-content: flex-start;
+    }
+
+    .nav-logo-img {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 auto;
+    }
+
+    .nav-title {
+        font-size: clamp(0.9rem, 4vw, 1.1rem);
+        letter-spacing: 0;
+    }
+
+    .nav-toggle {
+        display: inline-flex;
+    }
+
+    .nav-header .nav-links {
+        display: none;
+        flex: 1 0 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding-top: 6px;
+    }
+
+    .nav-header.nav-open .nav-links {
+        display: flex;
+    }
+
+    .nav-header .nav-link {
+        min-height: 44px;
+        padding: 11px 14px;
+        font-size: 1rem;
+    }
+
+    .nav-header .nav-link:hover {
+        transform: none;
+    }
+
+    .nav-header.nav-open .nav-toggle-icon {
+        background: transparent;
+    }
+
+    .nav-header.nav-open .nav-toggle-icon::before {
+        top: 0;
+        transform: rotate(45deg);
+    }
+
+    .nav-header.nav-open .nav-toggle-icon::after {
+        top: 0;
+        transform: rotate(-45deg);
+    }
+
+    main > .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 100%;
+    }
+}
+
 /* ==================== HOME PAGE STYLES ==================== */
 .home-main {
     margin-top: 100px;
-    max-width: 1200px;
     padding: 0 20px;
     width: 100%;
     display: flex;
@@ -288,7 +398,7 @@ input[type="number"] {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     margin: 0 auto 60px auto;
-    max-width: 1000px;
+    width: 100%;
 }
 
 .tool-card {
@@ -755,8 +865,8 @@ input[type="number"] {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 25px;
-        padding: 25px 20px;
+        gap: 5px;
+        padding: 25px 25px;
     }
 
     .timer-card .inline-div:first-child {
@@ -773,21 +883,21 @@ input[type="number"] {
         grid-template-areas: 
             "time time time"
             "start reset remove";
-        gap: 12px;
+        gap: 5px;
         justify-content: center;
     }
 
     /* Assign elements to the grid area */
     .timer-text, .timer-edit-input {
         grid-area: time;
-        margin: 0 0 10px 0;
+        margin: 0 0 0 0;
         width: 100%;
         text-align: center;
-        font-size: 3.5rem; /* Perfectly legible on mobile screens */
+        font-size: 2.5rem; /* Perfectly legible on mobile screens */
     }
     
     .timer-edit-input {
-        margin: 0 auto 10px auto;
+        margin: 0 auto 0 auto;
     }
 
     .timer-card .start-btn, .timer-card .pause-btn { grid-area: start; }
@@ -801,8 +911,6 @@ input[type="number"] {
         margin: 0;
     }
 }
-
-
 
 .timer-controls {
     display: flex;
@@ -1080,4 +1188,45 @@ input[type="number"] {
     font-size: 0.95rem;
     padding: 8px 18px; /* Bigger touch targets */
     border-radius: 8px;
+}
+
+.timer-sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.timer-sound-controls select {
+    min-width: min(280px, 100%);
+}
+
+.timer-sound-controls .compact-btn {
+    padding: 10px 16px;
+    white-space: nowrap;
+}
+
+.timer-sound-status {
+    flex-basis: 100%;
+    min-height: 1.2em;
+    color: #ffb6b6;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+@media (max-width: 600px) {
+    .timer-sound-controls {
+        justify-content: stretch;
+        width: 100%;
+    }
+
+    .timer-sound-controls select {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .timer-sound-status {
+        text-align: left;
+    }
 }

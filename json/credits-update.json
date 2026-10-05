@@ -53,6 +53,16 @@
   ],
   "updates": [
     {
+      "date": "05OCT26",
+      "version": "v3.0.1",
+      "description": "<b>Update To Map Portion:</b> I have updated the map portion of the site with new features and improvements."
+    },
+    {
+      "date": "05OCT26",
+      "version": "v3.0.0",
+      "description": "<b>Update To Whole Site:</b> I have made the site more user-friendly and allows for easier navigation."
+    },
+    {
       "date": "07JUL26",
       "version": "v2.5.0",
       "description": "<b>Update To Timer:</b> Redid the front end of the preset timer conditions and also added the ability to add an Alarm Rather than a timer. ( Also added a fun little option to create your own timer ringtone at the bottom of the page.)"

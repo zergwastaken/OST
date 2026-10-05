@@ -1,6 +1,12 @@
 let timers = [];
 let emojiOptions = ["⛴️", "🚤", "🚁", "✈️", "🚀"];
 let timersContainer = document.getElementById('timers-container');
+const timerStorageKey = 'timers';
+
+function setTimerStorageStatus(message) {
+    const status = document.getElementById('timerStorageStatus');
+    if (status) status.textContent = message;
+}
 
 function getRemainingSeconds(timer) {
     if (timer.expired) return 0;
@@ -10,8 +16,16 @@ function getRemainingSeconds(timer) {
     return timer.timeLeft ?? timer.duration;
 }
 
-function saveLocal(){
-    localStorage.setItem('timers', JSON.stringify(timers));
+function saveLocal() {
+    try {
+        localStorage.setItem(timerStorageKey, JSON.stringify(timers));
+        setTimerStorageStatus('');
+        return true;
+    } catch (error) {
+        console.error('Could not save timers to browser storage.', error);
+        setTimerStorageStatus('Timer storage is unavailable. Timers may not survive closing this tab.');
+        return false;
+    }
 }
 
 // Redirect the old function to the new system just in case your HTML calls it
@@ -19,11 +33,9 @@ function playTimerAlarm() {
     try { window.playActiveAlarm(); } catch(e) {}
 }
 
-function loadLocal(){
-    const storedTimers = localStorage.getItem('timers');
-    if (!storedTimers) return;
+function normalizeStoredTimers(storedTimers) {
     const now = Date.now();
-    timers = JSON.parse(storedTimers).map(timer => ({
+    const loadedTimers = (Array.isArray(storedTimers) ? storedTimers : []).map(timer => ({
         timerid: timer.timerid,
         name: timer.name,
         emoji: timer.emoji,
@@ -36,7 +48,7 @@ function loadLocal(){
     }));
 
     const expiredTimers = [];
-    timers.forEach(timer => {
+    loadedTimers.forEach(timer => {
         if (!timer.paused && timer.endTime) {
             if (timer.endTime <= now) {
                 timer.expired = true;
@@ -58,12 +70,44 @@ function loadLocal(){
         }
     });
 
-    renderTimers();
-    if (expiredTimers.length > 0) {
-        if (typeof generateModal === 'function') generateModal(expiredTimers);
-        try { window.playActiveAlarm(); } catch(e) { console.warn("Autoplay blocked on load."); }
+    return { timers: loadedTimers, expiredTimers };
+}
+
+function loadLocal() {
+    let storedTimers;
+    try {
+        storedTimers = localStorage.getItem(timerStorageKey);
+        if (storedTimers === null) return;
+        const loaded = normalizeStoredTimers(JSON.parse(storedTimers));
+        timers = loaded.timers;
+        renderTimers();
+        if (loaded.expiredTimers.length > 0) {
+            if (typeof generateModal === 'function') generateModal(loaded.expiredTimers);
+            try { window.playActiveAlarm(); } catch(e) { console.warn("Autoplay blocked on load."); }
+        }
+    } catch (error) {
+        console.error('Could not load saved timers from browser storage.', error);
+        setTimerStorageStatus('Saved timers could not be read. Browser storage may be blocked or corrupted.');
     }
 }
+
+// Timers use an absolute end time, so their countdown continues while this tab is closed.
+// Keep open timer tabs in sync without periodically overwriting the saved timer list.
+window.addEventListener('storage', event => {
+    if (event.key !== timerStorageKey && event.key !== null) return;
+
+    try {
+        if (event.key === null || event.newValue === null) {
+            timers = [];
+        } else {
+            timers = normalizeStoredTimers(JSON.parse(event.newValue)).timers;
+        }
+        renderTimers();
+    } catch (error) {
+        console.error('Could not synchronize timers from another tab.', error);
+        setTimerStorageStatus('Timer changes from another tab could not be synchronized.');
+    }
+});
 
 loadLocal();
 
@@ -261,14 +305,8 @@ function checkExpiredTimers() {
     }
 }
 
-let lastTimestamp = 0; let saveAccumulator = 0;
-function timerLoop(timestamp) {
-    if (!lastTimestamp) lastTimestamp = timestamp;
-    const deltaTime = timestamp - lastTimestamp;
-    lastTimestamp = timestamp;
-    saveAccumulator += deltaTime;
+function timerLoop() {
     updateTimers();
-    if (saveAccumulator >= 1000) { saveLocal(); saveAccumulator -= 1000; }
     requestAnimationFrame(timerLoop);
 }
 
@@ -312,7 +350,12 @@ function renderTimerCard(currentTimer){
         const element = emojiOptions[i];
         const emojiOption = document.createElement("span"); emojiOption.classList.add("emoji-option"); emojiOption.textContent = element;
         emojiMenu.appendChild(emojiOption);
-        emojiOption.addEventListener('click', () => { currentTimer.emoji = element; timerEmoji.textContent = element; emojiMenu.classList.remove('active'); });
+        emojiOption.addEventListener('click', () => {
+            currentTimer.emoji = element;
+            timerEmoji.textContent = element;
+            emojiMenu.classList.remove('active');
+            saveLocal();
+        });
     }
     
     timerEmoji.addEventListener('click', () => {
@@ -500,134 +543,156 @@ function submitCustomAlarmForm() {
     } catch (e) {}
 })();
 
-// =====================================================================
-// DYNAMIC HEADLESS ALARM PLAYER (For Timer Page)
-// =====================================================================
+// Timer alarm sounds are listed in audio/timer_sounds/sounds.json.
+const timerSoundCatalogPath = 'audio/timer_sounds/sounds.json';
+const timerSoundStorageKey = 'timerAlarmSound';
+const fallbackTimerSounds = [
+    { name: 'Alarm', src: 'audio/timer_sounds/alarm.mp3' },
+    { name: 'Quack', src: 'audio/timer_sounds/quack.m4a' },
+    { name: 'Shleep', src: 'audio/timer_sounds/shleep.m4a' }
+];
+let timerAlarmSounds = [];
+let activeAlarmAudio = null;
+let previewAlarmAudio = null;
+let timerAudioUnlocked = false;
+let isTimerSoundPreviewPlaying = false;
 
-let audioCtx;
-let masterGain; 
-let alarmTimerID;
-let isAlarmPlaying = false;
+function setPreviewButtonState(isPlaying) {
+    const button = document.getElementById('previewTimerSoundBtn');
+    if (!button) return;
+    button.textContent = isPlaying ? '■ Stop' : '▶ Preview';
+    button.setAttribute('aria-pressed', String(isPlaying));
+}
 
-let alarmBpm = 130, alarmNextNoteTime = 0.0, alarmCurrentStep = 0, alarmCurrentLoop = 0, alarmMaxLoops = 3;
-let alarmGrid = [];
-const alarmInstruments = ['Tick', 'Beep', 'Ring', 'Laser', 'Coin', 'Blip', 'Kick', 'Snare', 'Clap', 'Closed Hat', 'Open Hat'];
-const alarmStepsCount = 16;
+function unlockTimerAudio() {
+    if (timerAudioUnlocked) return;
+    const audio = new Audio(getSelectedTimerSound());
+    audio.muted = true;
+    audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = false;
+        timerAudioUnlocked = true;
+    }).catch(() => {
+        // The preview button remains available if the browser rejects muted playback.
+    });
+}
 
-const alarmDefaultPresets = {
-    "Classic Digital": { type: 'beat', bpm: 130, loops: 3, pattern: { "Beep": [0, 2, 8, 10] } },
-    "Mechanical Bell": { type: 'beat', bpm: 150, loops: 3, pattern: { "Ring": [0], "Tick": [0, 2, 4, 6, 8, 10, 12, 14] } },
-    "Clock Tick": { type: 'beat', bpm: 60, loops: 2, pattern: { "Tick": [0, 4, 8, 12] } },
-    "Timer Urgent": { type: 'beat', bpm: 160, loops: 3, pattern: { "Blip": [0, 2, 4, 6], "Laser": [0, 8] } },
-    "Timer Win": { type: 'beat', bpm: 110, loops: 1, pattern: { "Coin": [0, 4, 8, 12], "Blip": [0, 1, 2, 3, 4, 5, 6, 7], "Clap": [0, 8] } },
-    "Retro Boss": { type: 'beat', bpm: 150, loops: 2, pattern: { "Kick": [0, 3, 6, 8, 11, 14], "Snare": [4, 12], "Laser": [0, 8], "Blip": [2, 4, 6, 10, 12, 14] } },
-    "House Beat": { type: 'beat', bpm: 125, loops: 2, pattern: { "Kick": [0, 4, 8, 12], "Clap": [4, 12], "Closed Hat": [2, 6, 10, 14], "Open Hat": [14] } }
-};
+function setTimerSoundOptions(sounds) {
+    const picker = document.getElementById('timerSoundSelect');
+    if (!picker) return;
 
-// Background Audio Unlocker
-document.addEventListener('click', function unlockAudioContext() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    document.removeEventListener('click', unlockAudioContext);
-}, { once: true });
+    const savedSound = localStorage.getItem(timerSoundStorageKey);
+    picker.innerHTML = '';
+    timerAlarmSounds = sounds;
 
-function playTick(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(2500, t); gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.02); osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.02); }
-function playBeep(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(2048, t); gain.gain.setValueAtTime(0.3, t); gain.gain.setValueAtTime(0.3, t + 0.1); gain.gain.linearRampToValueAtTime(0, t + 0.12); osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.12); }
-function playRing(t) { const osc1 = audioCtx.createOscillator(), osc2 = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc1.type = 'sine'; osc2.type = 'sine'; osc1.frequency.setValueAtTime(1200, t); osc2.frequency.setValueAtTime(1250, t); gain.gain.setValueAtTime(0.6, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4); osc1.connect(gain); osc2.connect(gain); gain.connect(masterGain); osc1.start(t); osc2.start(t); osc1.stop(t + 0.4); osc2.stop(t + 0.4); }
-function playLaser(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.15); gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15); osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.15); }
-function playCoin(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(988, t); osc.frequency.setValueAtTime(1319, t + 0.08); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.2, t + 0.02); gain.gain.setValueAtTime(0.2, t + 0.08); gain.gain.linearRampToValueAtTime(0, t + 0.2); osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.2); }
-function playBlip(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.type = 'square'; osc.frequency.setValueAtTime(440, t); gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.1); }
-function playKick(t) { const osc = audioCtx.createOscillator(), gain = audioCtx.createGain(); osc.connect(gain); gain.connect(masterGain); osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(0.01, t + 0.5); gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5); osc.start(t); osc.stop(t + 0.5); }
-function playSnare(t) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 1000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2); noise.connect(filter).connect(gain).connect(masterGain); noise.start(t); const osc = audioCtx.createOscillator(), oscGain = audioCtx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); oscGain.connect(masterGain); osc.frequency.setValueAtTime(250, t); oscGain.gain.setValueAtTime(0.5, t); oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1); osc.start(t); osc.stop(t + 0.2); }
-function playClap(t) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 1500; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.8, t + 0.01); gain.gain.linearRampToValueAtTime(0, t + 0.04); gain.gain.linearRampToValueAtTime(0.7, t + 0.05); gain.gain.linearRampToValueAtTime(0, t + 0.08); gain.gain.linearRampToValueAtTime(0.6, t + 0.09); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3); noise.connect(filter).connect(gain).connect(masterGain); noise.start(t); }
-function playHat(t, decay) { const bs = audioCtx.sampleRate * 0.5, buf = audioCtx.createBuffer(1, bs, audioCtx.sampleRate), data = buf.getChannelData(0); for (let i = 0; i < bs; i++) data[i] = Math.random() * 2 - 1; const noise = audioCtx.createBufferSource(); noise.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 10000; const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.01, t + decay); noise.connect(filter).connect(gain).connect(masterGain); noise.start(t); }
-function playClosedHat(t) { playHat(t, 0.05); }
-function playOpenHat(t) { playHat(t, 0.3); }
+    sounds.forEach(sound => {
+        const option = document.createElement('option');
+        option.value = sound.src;
+        option.textContent = sound.name;
+        picker.appendChild(option);
+    });
 
-const alarmSoundMakers = [playTick, playBeep, playRing, playLaser, playCoin, playBlip, playKick, playSnare, playClap, playClosedHat, playOpenHat];
+    if (sounds.length === 0) {
+        picker.add(new Option('No audio files found', ''));
+        return;
+    }
 
-// --- 🛑 INSTANT AUDIO KILL SWITCH ---
+    picker.value = sounds.some(sound => sound.src === savedSound) ? savedSound : sounds[0].src;
+    localStorage.setItem(timerSoundStorageKey, picker.value);
+}
+
+async function loadTimerSoundOptions() {
+    const manifestUrl = new URL(timerSoundCatalogPath, document.baseURI);
+    try {
+        const response = await fetch(manifestUrl);
+        if (!response.ok) throw new Error(`Sound list request failed: ${response.status}`);
+        const entries = await response.json();
+        if (!Array.isArray(entries)) throw new Error('Sound list must be a JSON array.');
+
+        const sounds = entries
+            .filter(entry => entry && typeof entry.name === 'string' && typeof entry.src === 'string')
+            .map(entry => ({ name: entry.name, src: new URL(entry.src, response.url).href }));
+        setTimerSoundOptions(sounds);
+    } catch (error) {
+        console.warn('Could not load timer sound list; using built-in sound paths.', error);
+        setTimerSoundOptions(fallbackTimerSounds.map(sound => ({
+            name: sound.name,
+            src: new URL(sound.src, document.baseURI).href
+        })));
+    }
+}
+
+function getSelectedTimerSound() {
+    const picker = document.getElementById('timerSoundSelect');
+    return (picker && picker.value) || localStorage.getItem(timerSoundStorageKey) ||
+        new URL(fallbackTimerSounds[0].src, document.baseURI).href;
+}
+
 window.stopActiveAlarm = function() {
-    isAlarmPlaying = false;
-    clearTimeout(alarmTimerID);
-    
-    // Stop Synth Engine Instantly (Physical Disconnect)
-    if (masterGain) {
-        try { masterGain.disconnect(); } catch(e) {} // Unplugs virtual speakers
-    }
-    if (audioCtx && audioCtx.state === 'running') {
-        try { audioCtx.suspend(); } catch(e) {} // Freezes audio clock instantly
-    }
+    [activeAlarmAudio, previewAlarmAudio].forEach(audio => {
+        if (!audio) return;
+        audio.pause();
+        audio.currentTime = 0;
+    });
+    activeAlarmAudio = null;
+    previewAlarmAudio = null;
+    isTimerSoundPreviewPlaying = false;
+    setPreviewButtonState(false);
 };
-
-function alarmNextNote() {
-    alarmNextNoteTime += 0.25 * (60.0 / alarmBpm);
-    alarmCurrentStep++;
-    if (alarmCurrentStep === alarmStepsCount) {
-        alarmCurrentStep = 0; 
-        alarmCurrentLoop++;
-        if (alarmCurrentLoop >= alarmMaxLoops) {
-            window.stopActiveAlarm(); 
-            return false; 
-        }
-    }
-    return true;
-}
-
-function alarmScheduler() {
-    while (alarmNextNoteTime < audioCtx.currentTime + 0.1 && isAlarmPlaying) {
-        const stepNum = alarmCurrentStep;
-        alarmInstruments.forEach((_, trackIndex) => { 
-            if (alarmGrid[trackIndex][stepNum]) alarmSoundMakers[trackIndex](alarmNextNoteTime); 
-        });
-        if (!alarmNextNote()) break; 
-    }
-    if (isAlarmPlaying) alarmTimerID = setTimeout(alarmScheduler, 25.0);
-}
 
 window.playActiveAlarm = function() {
-    if (isAlarmPlaying) window.stopActiveAlarm();
-
-    let activeName = localStorage.getItem('os_tools_active_beat') || "Classic Digital";
-    const saves = JSON.parse(localStorage.getItem('os_tools_beats')) || {};
-
-    if (!saves[activeName] && !alarmDefaultPresets[activeName]) {
-        activeName = "Classic Digital"; 
-        localStorage.setItem('os_tools_active_beat', activeName);
-    }
-    
-    const p = saves[activeName] || alarmDefaultPresets[activeName];
-    isAlarmPlaying = true;
-
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    
-    // We must resume the context since stopActiveAlarm() suspends it!
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume().catch(e => console.warn("Audio Context locked. Needs user click."));
-    }
-    
-    // Clean up old masterGain and plug it back in
-    if (masterGain) {
-        try { masterGain.disconnect(); } catch(e){}
-    }
-    masterGain = audioCtx.createGain();
-    masterGain.connect(audioCtx.destination);
-    masterGain.gain.value = 1;
-    
-    alarmBpm = p.bpm || 130;
-    alarmMaxLoops = Math.max(1, Math.min(parseInt(p.loops) || 3, 3));
-    
-    alarmGrid = alarmInstruments.map(() => Array(alarmStepsCount).fill(false));
-    if (p.pattern) {
-        for (const [instName, steps] of Object.entries(p.pattern)) {
-            const instIndex = alarmInstruments.indexOf(instName);
-            if (instIndex !== -1) steps.forEach(step => alarmGrid[instIndex][step] = true);
-        }
-    }
-    
-    alarmCurrentLoop = 0; alarmCurrentStep = 0; 
-    alarmNextNoteTime = audioCtx.currentTime + 0.05;
-    alarmScheduler();
+    window.stopActiveAlarm();
+    activeAlarmAudio = new Audio(getSelectedTimerSound());
+    activeAlarmAudio.loop = true;
+    activeAlarmAudio.addEventListener('error', () => {
+    }, { once: true });
+    activeAlarmAudio.play().then(() => {
+    }).catch(error => {
+        console.warn('Timer alarm playback was blocked or the sound could not be loaded.', error);
+    });
 };
+
+;(function initTimerSoundPicker() {
+    const picker = document.getElementById('timerSoundSelect');
+    const previewButton = document.getElementById('previewTimerSoundBtn');
+
+    if (picker) {
+        picker.addEventListener('change', () => {
+            localStorage.setItem(timerSoundStorageKey, picker.value);
+            if (isTimerSoundPreviewPlaying && previewAlarmAudio) {
+                previewAlarmAudio.pause();
+                previewAlarmAudio.currentTime = 0;
+                previewAlarmAudio = null;
+                isTimerSoundPreviewPlaying = false;
+                setPreviewButtonState(false);
+            }
+        });
+    }
+
+    if (previewButton) {
+        previewButton.addEventListener('click', () => {
+            if (isTimerSoundPreviewPlaying) {
+                window.stopActiveAlarm();
+                return;
+            }
+
+            window.stopActiveAlarm();
+            isTimerSoundPreviewPlaying = true;
+            setPreviewButtonState(true);
+            previewAlarmAudio = new Audio(getSelectedTimerSound());
+            previewAlarmAudio.loop = true;
+            previewAlarmAudio.addEventListener('error', () => {
+                window.stopActiveAlarm();
+            }, { once: true });
+            previewAlarmAudio.play().then(() => {
+            }).catch(error => {
+                window.stopActiveAlarm();
+                console.warn('Timer sound preview could not be played.', error);
+            });
+        });
+    }
+
+    document.addEventListener('click', unlockTimerAudio, { once: true });
+    loadTimerSoundOptions();
+})();
