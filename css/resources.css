@@ -2,7 +2,7 @@
 :root {
     --bg-page: #0A192F;
     --bg-panel: rgba(23, 42, 69, 0.9);
-    --bg-input: #172A45;
+    --bg-input: #172a45;
     --text-main: #F4F6F9;
     --text-sub: #8892B0;
     --border-ui: #233554;
@@ -143,3 +143,253 @@ th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-
 th { color: white; text-transform: uppercase; font-size: 0.8rem; }
 .term { font-weight: bold; color: var(--highlight-yellow); }
 .hidden-row { display: none !important; }
+
+#ranks-container {
+    width: 100%;
+    margin: 30px 0 0;
+}
+
+/* Rank category panel */
+#ranks-container .table-section {
+    width: 100%;
+    margin: 0 0 30px;
+    overflow: hidden;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-ui);
+    border-radius: 6px;
+}
+
+/* Enlisted / Warrant Officer / Officer title */
+#ranks-container .section-title {
+    margin: 0;
+    padding: 12px 15px;
+    color: white;
+    background-color: rgba(255, 59, 0, 0.1);
+    border-bottom: 1px solid var(--border-ui);
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+/* Keeps horizontal scrolling inside rank table only */
+#ranks-container .table-wrapper {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Override the general table rule for rank comparison tables */
+#ranks-container .table-wrapper table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    border-radius: 0;
+    table-layout: fixed;
+    background-color: transparent;
+}
+
+/* Rank table header and cells */
+#ranks-container .table-wrapper th,
+#ranks-container .table-wrapper td {
+    padding: 8px 5px;
+    text-align: center;
+    vertical-align: middle;
+    border-right: 1px solid var(--border-ui);
+    border-bottom: 1px solid var(--border-ui);
+    font-size: 0.78rem;
+}
+
+#ranks-container .table-wrapper th:last-child,
+#ranks-container .table-wrapper td:last-child {
+    border-right: none;
+}
+
+#ranks-container .table-wrapper tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Branch headers */
+#ranks-container .table-wrapper th {
+    color: var(--text-main);
+    background-color: #1a2332;
+    font-size: 0.7rem;
+    font-weight: bold;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+/* Alternating row contrast */
+#ranks-container .table-wrapper tbody tr:nth-child(even) {
+    background-color: rgba(10, 25, 47, 0.35);
+}
+
+#ranks-container .table-wrapper tbody tr:hover {
+    background-color: rgba(255, 59, 0, 0.055);
+}
+
+/* Branch seal and service label */
+#ranks-container .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+#ranks-container .branch-header-logo {
+    display: block;
+    width: 30px !important;
+    height: 30px !important;
+    max-width: 30px !important;
+    max-height: 30px !important;
+    padding: 2px;
+    object-fit: contain;
+    background-color: #ffffff;
+    border: 1px solid var(--border-ui);
+    border-radius: 50%;
+}
+
+/* Paygrade column */
+#ranks-container .table-wrapper th:first-child,
+#ranks-container .paygrade-cell {
+    width: 70px;
+}
+
+#ranks-container .paygrade-cell {
+    padding: 10px 4px;
+    color: var(--highlight-yellow);
+    background-color: rgba(10, 25, 47, 0.65);
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+}
+
+/* Rank content within each cell */
+#ranks-container .rank-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 76px;
+    padding: 4px 1px;
+    gap: 3px;
+}
+
+/* Insignia sizing */
+#ranks-container .rank-entry img {
+    display: block !important;
+    width: 38px !important;
+    height: 34px !important;
+    min-width: 0 !important;
+    max-width: 38px !important;
+    max-height: 34px !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+}
+
+#ranks-container .rank-name {
+    max-width: 95px;
+    color: var(--text-main);
+    font-size: 0.64rem;
+    font-weight: bold;
+    line-height: 1.15;
+}
+
+#ranks-container .rank-abbr {
+    color: var(--text-sub);
+    font-size: 0.58rem;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+/* Divider when a branch has multiple ranks at one paygrade */
+#ranks-container .rank-divider {
+    width: 75%;
+    height: 1px;
+    margin: 4px auto;
+    background-color: var(--border-ui);
+}
+
+/* Empty-rank / no-insignia messages */
+#ranks-container .no-rank,
+#ranks-container .no-insignia-badge {
+    display: inline-block;
+    padding: 4px 5px;
+    border: 1px solid var(--border-ui);
+    border-radius: 4px;
+    font-size: 0.52rem;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+#ranks-container .no-rank {
+    color: var(--text-sub);
+    background-color: rgba(10, 25, 47, 0.35);
+}
+
+#ranks-container .no-insignia-badge {
+    color: var(--highlight-yellow);
+    background-color: rgba(255, 215, 0, 0.06);
+    border-style: dashed;
+}
+
+/* Error message generated by the fetch catch block */
+#ranks-container > div[style*="color: red"] {
+    padding: 18px !important;
+    color: #ffb5a0 !important;
+    background-color: rgba(255, 59, 0, 0.08);
+    border: 1px solid rgba(255, 59, 0, 0.5);
+    border-radius: 6px;
+}
+
+#ranks-container > div[style*="color: red"] h3 {
+    margin-bottom: 8px;
+}
+
+/* Mobile sizing */
+@media (max-width: 600px) {
+    #ranks-container .table-wrapper table {
+        min-width: 700px;
+    }
+
+    #ranks-container .table-wrapper th,
+    #ranks-container .table-wrapper td {
+        padding: 6px 3px;
+    }
+
+    #ranks-container .section-title {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    #ranks-container .branch-header-logo {
+        width: 27px !important;
+        height: 27px !important;
+        max-width: 27px !important;
+        max-height: 27px !important;
+    }
+
+    #ranks-container .rank-entry {
+        min-height: 68px;
+    }
+
+    #ranks-container .rank-entry img {
+        width: 32px !important;
+        height: 29px !important;
+        max-width: 32px !important;
+        max-height: 29px !important;
+    }
+
+    #ranks-container .rank-name {
+        font-size: 0.59rem;
+    }
+
+    #ranks-container .rank-abbr {
+        font-size: 0.54rem;
+    }
+}
