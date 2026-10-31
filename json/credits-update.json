@@ -53,6 +53,11 @@
   ],
   "updates": [
     {
+      "date": "31OCT26",
+      "version": "v3.0.2",
+      "description": "<b>Update To Resources Page:</b> I have added military ranks."
+    },
+    {
       "date": "05OCT26",
       "version": "v3.0.1",
       "description": "<b>Update To Map Portion:</b> I have updated the map portion of the site with new features and improvements."
