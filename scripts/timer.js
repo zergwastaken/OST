@@ -644,7 +644,7 @@ window.stopActiveAlarm = function() {
 window.playActiveAlarm = function() {
     window.stopActiveAlarm();
     activeAlarmAudio = new Audio(getSelectedTimerSound());
-    activeAlarmAudio.loop = true;
+    activeAlarmAudio.loop = false;
     activeAlarmAudio.addEventListener('error', () => {
     }, { once: true });
     activeAlarmAudio.play().then(() => {
@@ -681,7 +681,7 @@ window.playActiveAlarm = function() {
             isTimerSoundPreviewPlaying = true;
             setPreviewButtonState(true);
             previewAlarmAudio = new Audio(getSelectedTimerSound());
-            previewAlarmAudio.loop = true;
+            previewAlarmAudio.loop = false;
             previewAlarmAudio.addEventListener('error', () => {
                 window.stopActiveAlarm();
             }, { once: true });
