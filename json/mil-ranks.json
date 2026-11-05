@@ -1,0 +1,261 @@
+[
+  {
+    "branch": "United States Coast Guard",
+    "branch-img": "images/mil-ranks/coast-guard/sealCoastGuard.png",
+    "categories": [
+        {
+        "type": "Enlisted",
+        "ranks": [
+            { "name": "Seaman Recruit", "abbr": "SR", "paygrade": "E-1", "desc": "Initial entry-level training rank.", "img": "images/mil-ranks/coast-guard/E1.png" },
+            { "name": "Seaman Apprentice", "abbr": "SA", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/coast-guard/E2.png" },
+            { "name": "Seaman", "abbr": "SN", "paygrade": "E-3", "desc": "Fully qualified in basic duties.", "img": "images/mil-ranks/coast-guard/E3.png" },
+            { "name": "Petty Officer Third Class", "abbr": "PO3", "paygrade": "E-4", "desc": "First tier of the non-commissioned officer roles.", "img": "images/mil-ranks/coast-guard/E4.png" },
+            { "name": "Petty Officer Second Class", "abbr": "PO2", "paygrade": "E-5", "desc": "Mid-level non-commissioned officer.", "img": "images/mil-ranks/coast-guard/E5.png" },
+            { "name": "Petty Officer First Class", "abbr": "PO1", "paygrade": "E-6", "desc": "Senior non-commissioned officer level.", "img": "images/mil-ranks/coast-guard/E6.png" },
+            { "name": "Chief Petty Officer", "abbr": "CPO", "paygrade": "E-7", "desc": "Senior enlisted leader and technical expert.", "img": "images/mil-ranks/coast-guard/E7.png" },
+            { "name": "Senior Chief Petty Officer", "abbr": "SCPO", "paygrade": "E-8", "desc": "Highly experienced senior enlisted leader.", "img": "images/mil-ranks/coast-guard/E8.png" },
+            { "name": "Master Chief Petty Officer", "abbr": "MCPO", "paygrade": "E-9", "desc": "Senior enlisted rank, serving as command technical experts.", "img": "images/mil-ranks/coast-guard/E9.png" },
+            { "name": "Fleet/Command Master Chief Petty Officer", "abbr": "MCPO", "paygrade": "E-9", "desc": "Senior enlisted rank, serving as command technical experts.", "img": "images/mil-ranks/coast-guard/E9B.png" },
+            { "name": "Master Chief Petty Officer of the Coast Guard", "abbr": "MCPOCG", "paygrade": "E-9 Special", "desc": "Most senior enlisted member of the Coast Guard.", "img": "images/mil-ranks/coast-guard/E9C.png" }
+        ]},
+        {
+        "type": "Warrant Officers",
+        "ranks": [
+            { "name": "Chief Warrant Officer 2", "abbr": "CWO2", "paygrade": "W-2", "desc": "Technical and tactical experts.", "img": "images/mil-ranks/coast-guard/W2.png" },
+            { "name": "Chief Warrant Officer 3", "abbr": "CWO3", "paygrade": "W-3", "desc": "Advanced technical and tactical experts.", "img": "images/mil-ranks/coast-guard/W3.png" },
+            { "name": "Chief Warrant Officer 4", "abbr": "CWO4", "paygrade": "W-4", "desc": "Senior level technical experts and leaders.", "img": "images/mil-ranks/coast-guard/W4.png" }
+        ]},
+        {
+        "type": "Officers",
+        "ranks": [
+            { "name": "Ensign", "abbr": "ENS", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/coast-guard/O1.png" },
+            { "name": "Lieutenant Junior Grade", "abbr": "LTJG", "paygrade": "O-2", "desc": "Second junior officer rank.", "img": "images/mil-ranks/coast-guard/O2.png" },
+            { "name": "Lieutenant", "abbr": "LT", "paygrade": "O-3", "desc": "Division officer or detachment commander.", "img": "images/mil-ranks/coast-guard/O3.png" },
+            { "name": "Lieutenant Commander", "abbr": "LCDR", "paygrade": "O-4", "desc": "Junior field grade officer.", "img": "images/mil-ranks/coast-guard/O4.png" },
+            { "name": "Commander", "abbr": "CDR", "paygrade": "O-5", "desc": "Commanding officer of medium-sized vessels or units.", "img": "images/mil-ranks/coast-guard/O5.png" },
+            { "name": "Captain", "abbr": "CAPT", "paygrade": "O-6", "desc": "Senior officer commanding large vessels or shore units.", "img": "images/mil-ranks/coast-guard/O6.png" },
+            { "name": "Rear Admiral (Lower Half)", "abbr": "RDML", "paygrade": "O-7", "desc": "One-star flag officer.", "img": "images/mil-ranks/coast-guard/O7.png" },
+            { "name": "Rear Admiral", "abbr": "RADM", "paygrade": "O-8", "desc": "Two-star flag officer.", "img": "images/mil-ranks/coast-guard/O8.png" },
+            { "name": "Vice Admiral", "abbr": "VADM", "paygrade": "O-9", "desc": "Three-star flag officer, commands large regional areas.", "img": "images/mil-ranks/coast-guard/O9.png" },
+            { "name": "Admiral", "abbr": "ADM", "paygrade": "O-10", "desc": "Four-star flag officer, typically the Commandant.", "img": "images/mil-ranks/coast-guard/O10.png" }
+        ]}
+    ]},
+    {
+    "branch": "United States Army",
+    "branch-img": "https://via.placeholder.com/80?text=CWO2",
+    "categories": [
+        {
+        "type": "Enlisted",
+        "ranks": [
+            { "name": "Private", "abbr": "PVT", "paygrade": "E-1", "desc": "Entry-level trainee.", "img": "" },
+            { "name": "Private Second Class", "abbr": "PV2", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/army/E2.png" },
+            { "name": "Private First Class", "abbr": "PFC", "paygrade": "E-3", "desc": "Fully trained junior enlisted soldier.", "img": "images/mil-ranks/army/E3.png" },
+            { "name": "Specialist", "abbr": "SPC", "paygrade": "E-4", "desc": "Technical expert junior enlisted.", "img": "images/mil-ranks/army/E4.png" },
+            { "name": "Corporal", "abbr": "CPL", "paygrade": "E-4", "desc": "Junior non-commissioned officer.", "img": "images/mil-ranks/army/E4B.png" },
+            { "name": "Sergeant", "abbr": "SGT", "paygrade": "E-5", "desc": "First line leader.", "img": "images/mil-ranks/army/E5.png" },
+            { "name": "Staff Sergeant", "abbr": "SSG", "paygrade": "E-6", "desc": "Squad leader or section chief.", "img": "images/mil-ranks/army/E6.png" },
+            { "name": "Sergeant First Class", "abbr": "SFC", "paygrade": "E-7", "desc": "Platoon sergeant.", "img": "images/mil-ranks/army/E7.png" },
+            { "name": "Master Sergeant", "abbr": "MSG", "paygrade": "E-8", "desc": "Principal NCO at battalion level or higher.", "img": "images/mil-ranks/army/E8.png" },
+            { "name": "First Sergeant", "abbr": "1SG", "paygrade": "E-8", "desc": "Senior NCO in companies, batteries, and troops.", "img": "images/mil-ranks/army/E8B.png" },
+            { "name": "Sergeant Major", "abbr": "SGM", "paygrade": "E-9", "desc": "Subject matter expert in technical fields.", "img": "images/mil-ranks/army/E9.png" },
+            { "name": "Command Sergeant Major", "abbr": "CSM", "paygrade": "E-9", "desc": "Senior enlisted advisor at battalion level and above.", "img": "images/mil-ranks/army/E9B.png" },
+            { "name": "Sergeant Major of the Army", "abbr": "SMA", "paygrade": "E-9 Special", "desc": "Most senior enlisted member of the Army.", "img": "images/mil-ranks/army/E9C.png" }
+        ]},
+        {
+        "type": "Warrant Officers",
+        "ranks": [
+            { "name": "Warrant Officer 1", "abbr": "WO1", "paygrade": "W-1", "desc": "Appointed by warrant from the Secretary of the Army.", "img": "images/mil-ranks/army/W1.png" },
+            { "name": "Chief Warrant Officer 2", "abbr": "CW2", "paygrade": "W-2", "desc": "Commissioned warrant officer.", "img": "images/mil-ranks/army/W2.png" },
+            { "name": "Chief Warrant Officer 3", "abbr": "CW3", "paygrade": "W-3", "desc": "Advanced level expert.", "img": "images/mil-ranks/army/W3.png" },
+            { "name": "Chief Warrant Officer 4", "abbr": "CW4", "paygrade": "W-4", "desc": "Senior level expert.", "img": "images/mil-ranks/army/W4.png" },
+            { "name": "Chief Warrant Officer 5", "abbr": "CW5", "paygrade": "W-5", "desc": "Master-level expert.", "img": "images/mil-ranks/army/W5.png" }
+        ]},
+        {
+        "type": "Officers",
+        "ranks": [
+            { "name": "Second Lieutenant", "abbr": "2LT", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/officer/O1.png" },
+            { "name": "First Lieutenant", "abbr": "1LT", "paygrade": "O-2", "desc": "Experienced junior officer.", "img": "images/mil-ranks/officer/O2.png" },
+            { "name": "Captain", "abbr": "CPT", "paygrade": "O-3", "desc": "Company or troop commander.", "img": "images/mil-ranks/officer/O3.png" },
+            { "name": "Major", "abbr": "MAJ", "paygrade": "O-4", "desc": "Primary staff officer.", "img": "images/mil-ranks/officer/O4.png" },
+            { "name": "Lieutenant Colonel", "abbr": "LTC", "paygrade": "O-5", "desc": "Battalion commander.", "img": "images/mil-ranks/officer/O5.png" },
+            { "name": "Colonel", "abbr": "COL", "paygrade": "O-6", "desc": "Brigade commander.", "img": "images/mil-ranks/officer/O6.png" },
+            { "name": "Brigadier General", "abbr": "BG", "paygrade": "O-7", "desc": "One-star general officer.", "img": "images/mil-ranks/officer/O7.png" },
+            { "name": "Major General", "abbr": "MG", "paygrade": "O-8", "desc": "Two-star general officer, division commander.", "img": "images/mil-ranks/officer/O8.png" },
+            { "name": "Lieutenant General", "abbr": "LTG", "paygrade": "O-9", "desc": "Three-star general officer, corps commander.", "img": "images/mil-ranks/officer/O9.png" },
+            { "name": "General", "abbr": "GEN", "paygrade": "O-10", "desc": "Four-star general officer.", "img": "images/mil-ranks/officer/O10.png" },
+            { "name": "General of the Army", "abbr": "GA", "paygrade": "O-11 (Wartime)", "desc": "Five-star wartime general officer.", "img": "images/mil-ranks/officer/O11.png" }
+        ]}
+    ]},
+    {
+    "branch": "United States Navy",
+    "branch-img": "https://via.placeholder.com/80?text=CWO2",
+    "categories": [
+        {
+        "type": "Enlisted",
+        "ranks": [
+            { "name": "Seaman Recruit", "abbr": "SR", "paygrade": "E-1", "desc": "Entry-level trainee.", "img": "" },
+            { "name": "Seaman Apprentice", "abbr": "SA", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/navy/E2.png" },
+            { "name": "Seaman", "abbr": "SN", "paygrade": "E-3", "desc": "Fully qualified in basic duties.", "img": "images/mil-ranks/navy/E3.png" },
+            { "name": "Petty Officer Third Class", "abbr": "PO3", "paygrade": "E-4", "desc": "First tier of the non-commissioned officer roles.", "img": "images/mil-ranks/navy/E4.png" },
+            { "name": "Petty Officer Second Class", "abbr": "PO2", "paygrade": "E-5", "desc": "Mid-level non-commissioned officer.", "img": "images/mil-ranks/navy/E5.png" },
+            { "name": "Petty Officer First Class", "abbr": "PO1", "paygrade": "E-6", "desc": "Senior non-commissioned officer level.", "img": "images/mil-ranks/navy/E6.png" },
+            { "name": "Chief Petty Officer", "abbr": "CPO", "paygrade": "E-7", "desc": "Senior enlisted leader and technical expert.", "img": "images/mil-ranks/navy/E7.png" },
+            { "name": "Senior Chief Petty Officer", "abbr": "SCPO", "paygrade": "E-8", "desc": "Highly experienced senior enlisted leader.", "img": "images/mil-ranks/navy/E8.png" },
+            { "name": "Master Chief Petty Officer", "abbr": "MCPO", "paygrade": "E-9", "desc": "Senior enlisted rank, serving as command technical experts.", "img": "images/mil-ranks/navy/E9.png" },
+            { "name": "Fleet/Command Master Chief Petty Officer", "abbr": "MCPO", "paygrade": "E-9", "desc": "Senior enlisted rank, serving as command technical experts.", "img": "images/mil-ranks/navy/E9B.png" },
+            { "name": "Master Chief Petty Officer of the Navy", "abbr": "MCPON", "paygrade": "E-9 Special", "desc": "Most senior enlisted member of the Navy.", "img": "images/mil-ranks/navy/E9C.png" }
+        ]},
+        {
+        "type": "Warrant Officers",
+        "ranks": [
+            { "name": "Chief Warrant Officer 1", "abbr": "CWO1", "paygrade": "W-1", "desc": "Commissioned technical and tactical expert.", "img": "images/mil-ranks/navy/W1.png" },
+            { "name": "Chief Warrant Officer 2", "abbr": "CWO2", "paygrade": "W-2", "desc": "Commissioned technical and tactical expert.", "img": "images/mil-ranks/navy/W2.png" },
+            { "name": "Chief Warrant Officer 3", "abbr": "CWO3", "paygrade": "W-3", "desc": "Advanced level expert.", "img": "images/mil-ranks/navy/W3.png" },
+            { "name": "Chief Warrant Officer 4", "abbr": "CWO4", "paygrade": "W-4", "desc": "Senior level expert.", "img": "images/mil-ranks/navy/W4.png" },
+            { "name": "Chief Warrant Officer 5", "abbr": "CWO5", "paygrade": "W-5", "desc": "Master-level expert.", "img": "images/mil-ranks/navy/W5.png" }
+        ]},
+        {
+        "type": "Officers",
+        "ranks": [
+            { "name": "Ensign", "abbr": "ENS", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/navy/O1.png" },
+            { "name": "Lieutenant Junior Grade", "abbr": "LTJG", "paygrade": "O-2", "desc": "Second junior officer rank.", "img": "images/mil-ranks/navy/O2.png" },
+            { "name": "Lieutenant", "abbr": "LT", "paygrade": "O-3", "desc": "Division officer.", "img": "images/mil-ranks/navy/O3.png" },
+            { "name": "Lieutenant Commander", "abbr": "LCDR", "paygrade": "O-4", "desc": "Junior field grade officer.", "img": "images/mil-ranks/navy/O4.png" },
+            { "name": "Commander", "abbr": "CDR", "paygrade": "O-5", "desc": "Commanding officer of a ship or aviation squadron.", "img": "images/mil-ranks/navy/O5.png" },
+            { "name": "Captain", "abbr": "CAPT", "paygrade": "O-6", "desc": "Commanding officer of major commands.", "img": "images/mil-ranks/navy/O6.png" },
+            { "name": "Rear Admiral (Lower Half)", "abbr": "RDML", "paygrade": "O-7", "desc": "One-star flag officer.", "img": "images/mil-ranks/navy/O7.png" },
+            { "name": "Rear Admiral", "abbr": "RADM", "paygrade": "O-8", "desc": "Two-star flag officer.", "img": "images/mil-ranks/navy/O8.png" },
+            { "name": "Vice Admiral", "abbr": "VADM", "paygrade": "O-9", "desc": "Three-star flag officer.", "img": "images/mil-ranks/navy/O9.png" },
+            { "name": "Admiral", "abbr": "ADM", "paygrade": "O-10", "desc": "Four-star flag officer.", "img": "images/mil-ranks/navy/O10.png" },
+            { "name": "Fleet Admiral", "abbr": "FADM", "paygrade": "O-11 (Wartime)", "desc": "Five-star wartime flag officer.", "img": "images/mil-ranks/officer/O11.png" }
+
+        ]
+      }
+    ]
+  },
+  {
+    "branch": "United States Marine Corps",
+    "branch-img": "https://via.placeholder.com/80?text=CWO2",
+    "categories": [
+      {
+        "type": "Enlisted",
+        "ranks": [
+          { "name": "Private", "abbr": "Pvt", "paygrade": "E-1", "desc": "Entry-level trainee.", "img": "" },
+          { "name": "Private First Class", "abbr": "PFC", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/marines/E2.png" },
+          { "name": "Lance Corporal", "abbr": "LCpl", "paygrade": "E-3", "desc": "Experienced junior enlisted.", "img": "images/mil-ranks/marines/E3.png" },
+          { "name": "Corporal", "abbr": "Cpl", "paygrade": "E-4", "desc": "Junior non-commissioned officer.", "img": "images/mil-ranks/marines/E4.png" },
+          { "name": "Sergeant", "abbr": "Sgt", "paygrade": "E-5", "desc": "Squad leader.", "img": "images/mil-ranks/marines/E5.png" },
+          { "name": "Staff Sergeant", "abbr": "SSgt", "paygrade": "E-6", "desc": "Platoon sergeant.", "img": "images/mil-ranks/marines/E6.png" },
+          { "name": "Gunnery Sergeant", "abbr": "GySgt", "paygrade": "E-7", "desc": "Company operations chief.", "img": "images/mil-ranks/marines/E7.png" },
+          { "name": "Master Sergeant", "abbr": "MSgt", "paygrade": "E-8", "desc": "Technical expert.", "img": "images/mil-ranks/marines/E8.png" },
+          { "name": "First Sergeant", "abbr": "1stSgt", "paygrade": "E-8", "desc": "Senior enlisted advisor for a company.", "img": "images/mil-ranks/marines/E8B.png" },
+          { "name": "Master Gunnery Sergeant", "abbr": "MGySgt", "paygrade": "E-9", "desc": "Senior technical expert.", "img": "images/mil-ranks/marines/E9.png" },
+          { "name": "Sergeant Major", "abbr": "SgtMaj", "paygrade": "E-9", "desc": "Senior enlisted advisor at battalion level or higher.", "img": "images/mil-ranks/marines/E9B.png" },
+          { "name": "Sergeant Major of the Marine Corps", "abbr": "SMMC", "paygrade": "E-9 Special", "desc": "Most senior enlisted Marine.", "img": "images/mil-ranks/marines/E9C.png" }
+        ]
+      },
+      {
+        "type": "Warrant Officers",
+        "ranks": [
+          { "name": "Warrant Officer 1", "abbr": "WO1", "paygrade": "W-1", "desc": "Appointed by warrant.", "img": "images/mil-ranks/marines/W1.png" },
+          { "name": "Chief Warrant Officer 2", "abbr": "CWO2", "paygrade": "W-2", "desc": "Commissioned warrant officer.", "img": "images/mil-ranks/marines/W2.png" },
+          { "name": "Chief Warrant Officer 3", "abbr": "CWO3", "paygrade": "W-3", "desc": "Advanced level expert.", "img": "images/mil-ranks/marines/W3.png" },
+          { "name": "Chief Warrant Officer 4", "abbr": "CWO4", "paygrade": "W-4", "desc": "Senior level expert.", "img": "images/mil-ranks/marines/W4.png" },
+          { "name": "Chief Warrant Officer 5", "abbr": "CWO5", "paygrade": "W-5", "desc": "Master-level expert.", "img": "images/mil-ranks/marines/W5.png" }
+        ]
+      },
+      {
+        "type": "Officers",
+        "ranks": [
+          { "name": "Second Lieutenant", "abbr": "2ndLt", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/officer/O1.png" },
+          { "name": "First Lieutenant", "abbr": "1stLt", "paygrade": "O-2", "desc": "Experienced junior officer.", "img": "images/mil-ranks/officer/O2.png" },
+          { "name": "Captain", "abbr": "Capt", "paygrade": "O-3", "desc": "Company commander.", "img": "images/mil-ranks/officer/O3.png" },
+          { "name": "Major", "abbr": "Maj", "paygrade": "O-4", "desc": "Executive officer or primary staff.", "img": "images/mil-ranks/officer/O4.png" },
+          { "name": "Lieutenant Colonel", "abbr": "LtCol", "paygrade": "O-5", "desc": "Battalion commander.", "img": "images/mil-ranks/officer/O5.png" },
+          { "name": "Colonel", "abbr": "Col", "paygrade": "O-6", "desc": "Regiment commander.", "img": "images/mil-ranks/officer/O6.png" },
+          { "name": "Brigadier General", "abbr": "BGen", "paygrade": "O-7", "desc": "One-star general officer.", "img": "images/mil-ranks/officer/O7.png" },
+          { "name": "Major General", "abbr": "MajGen", "paygrade": "O-8", "desc": "Two-star general officer.", "img": "images/mil-ranks/officer/O8.png" },
+          { "name": "Lieutenant General", "abbr": "LtGen", "paygrade": "O-9", "desc": "Three-star general officer.", "img": "images/mil-ranks/officer/O9.png" },
+          { "name": "General", "abbr": "Gen", "paygrade": "O-10", "desc": "Four-star general officer, typically Commandant.", "img": "images/mil-ranks/officer/O10.png" }
+        ]
+      }
+    ]
+  },
+  {
+    "branch": "United States Air Force",
+    "branch-img": "https://via.placeholder.com/80?text=CWO2",
+    "categories": [
+      {
+        "type": "Enlisted",
+        "ranks": [
+          { "name": "Airman Basic", "abbr": "AB", "paygrade": "E-1", "desc": "Entry-level trainee.", "img": "" },
+          { "name": "Airman", "abbr": "Amn", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/air-force/E2.png" },
+          { "name": "Airman First Class", "abbr": "A1C", "paygrade": "E-3", "desc": "Fully qualified in basic duties.", "img": "images/mil-ranks/air-force/E3.png" },
+          { "name": "Senior Airman", "abbr": "SrA", "paygrade": "E-4", "desc": "Experienced enlisted airman.", "img": "images/mil-ranks/air-force/E4.png" },
+          { "name": "Staff Sergeant", "abbr": "SSgt", "paygrade": "E-5", "desc": "First tier of the non-commissioned officer roles.", "img": "images/mil-ranks/air-force/E5.png" },
+          { "name": "Technical Sergeant", "abbr": "TSgt", "paygrade": "E-6", "desc": "Mid-level non-commissioned officer.", "img": "images/mil-ranks/air-force/E6.png" },
+          { "name": "Master Sergeant", "abbr": "MSgt", "paygrade": "E-7", "desc": "Senior non-commissioned officer.", "img": "images/mil-ranks/air-force/E7.png" },
+          { "name": "Senior Master Sergeant", "abbr": "SMSgt", "paygrade": "E-8", "desc": "Highly experienced senior NCO.", "img": "images/mil-ranks/air-force/E8.png" },
+          { "name": "Chief Master Sergeant", "abbr": "CMSgt", "paygrade": "E-9", "desc": "Highest enlisted rank, serving as command leaders.", "img": "images/mil-ranks/air-force/E9.png" },
+          { "name": "First Sergeant", "abbr": "CMSgt", "paygrade": "E-9", "desc": "Highest enlisted rank, serving as command leaders.", "img": "images/mil-ranks/air-force/E9B.png" },
+          { "name": "Command Chief Master Sergeant", "abbr": "CMSgt", "paygrade": "E-9", "desc": "Highest enlisted rank, serving as command leaders.", "img": "images/mil-ranks/air-force/E9C.png" },
+          { "name": "Chief Master Sergeant of the Air Force", "abbr": "CMSAF", "paygrade": "E-9 Special", "desc": "Most senior enlisted member of the Air Force.", "img": "images/mil-ranks/air-force/E9D.png" }
+
+        ]
+      },
+      {
+        "type": "Officers",
+        "ranks": [
+            { "name": "Second Lieutenant", "abbr": "2d Lt", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/officer/O1.png" },
+            { "name": "First Lieutenant", "abbr": "1st Lt", "paygrade": "O-2", "desc": "Experienced junior officer.", "img": "images/mil-ranks/officer/O2.png" },
+            { "name": "Captain", "abbr": "Capt", "paygrade": "O-3", "desc": "Flight commander.", "img": "images/mil-ranks/officer/O3.png" },
+            { "name": "Major", "abbr": "Maj", "paygrade": "O-4", "desc": "Squadron commander.", "img": "images/mil-ranks/officer/O4.png" },
+            { "name": "Lieutenant Colonel", "abbr": "Lt Col", "paygrade": "O-5", "desc": "Squadron or group commander.", "img": "images/mil-ranks/officer/O5.png" },
+            { "name": "Colonel", "abbr": "Col", "paygrade": "O-6", "desc": "Wing commander.", "img": "images/mil-ranks/officer/O6.png" },
+            { "name": "Brigadier General", "abbr": "Brig Gen", "paygrade": "O-7", "desc": "One-star general officer.", "img": "images/mil-ranks/officer/O7.png" },
+            { "name": "Major General", "abbr": "Maj Gen", "paygrade": "O-8", "desc": "Two-star general officer.", "img": "images/mil-ranks/officer/O8.png" },
+            { "name": "Lieutenant General", "abbr": "Lt Gen", "paygrade": "O-9", "desc": "Three-star general officer.", "img": "images/mil-ranks/officer/O9.png" },
+            { "name": "General", "abbr": "Gen", "paygrade": "O-10", "desc": "Four-star general officer.", "img": "images/mil-ranks/officer/O10.png" },
+            { "name": "General of the Air Force", "abbr": "GAF", "paygrade": "O-11 (Wartime)", "desc": "Five-star wartime general officer.", "img": "images/mil-ranks/officer/O11.png" }
+        
+        ]
+      }
+    ]
+  },
+  {
+    "branch": "United States Space Force",
+    "branch-img": "https://via.placeholder.com/80?text=CWO2",
+    "categories": [
+      {
+        "type": "Enlisted",
+        "ranks": [
+          { "name": "Specialist 1", "abbr": "Spc1", "paygrade": "E-1", "desc": "Entry-level trainee.", "img": "images/mil-ranks/space-force/E1.png" },
+          { "name": "Specialist 2", "abbr": "Spc2", "paygrade": "E-2", "desc": "Second entry-level rank.", "img": "images/mil-ranks/space-force/E2.png" },
+          { "name": "Specialist 3", "abbr": "Spc3", "paygrade": "E-3", "desc": "Fully qualified in basic duties.", "img": "images/mil-ranks/space-force/E3.png" },
+          { "name": "Specialist 4", "abbr": "Spc4", "paygrade": "E-4", "desc": "Experienced enlisted guardian.", "img": "images/mil-ranks/space-force/E4.png" },
+          { "name": "Sergeant", "abbr": "Sgt", "paygrade": "E-5", "desc": "First tier of the non-commissioned officer roles.", "img": "images/mil-ranks/space-force/E5.png" },
+          { "name": "Technical Sergeant", "abbr": "TSgt", "paygrade": "E-6", "desc": "Mid-level non-commissioned officer.", "img": "images/mil-ranks/space-force/E6.png" },
+          { "name": "Master Sergeant", "abbr": "MSgt", "paygrade": "E-7", "desc": "Senior non-commissioned officer.", "img": "images/mil-ranks/space-force/E7.png" },
+          { "name": "Senior Master Sergeant", "abbr": "SMSgt", "paygrade": "E-8", "desc": "Highly experienced senior NCO.", "img": "images/mil-ranks/space-force/E8.png" },
+          { "name": "Chief Master Sergeant", "abbr": "CMSgt", "paygrade": "E-9", "desc": "Highest enlisted rank.", "img": "images/mil-ranks/space-force/E9.png" },
+          { "name": "Chief Master Sergeant of the Space Force", "abbr": "CMSSF", "paygrade": "E-9 Special", "desc": "Most senior enlisted member of the Space Force.", "img": "images/mil-ranks/space-force/E9B.png" }
+        ]
+      },
+      {
+        "type": "Officers",
+        "ranks": [
+          { "name": "Second Lieutenant", "abbr": "2d Lt", "paygrade": "O-1", "desc": "Entry-level commissioned officer.", "img": "images/mil-ranks/officer/O1.png" },
+          { "name": "First Lieutenant", "abbr": "1st Lt", "paygrade": "O-2", "desc": "Experienced junior officer.", "img": "images/mil-ranks/officer/O2.png" },
+          { "name": "Captain", "abbr": "Capt", "paygrade": "O-3", "desc": "Flight commander.", "img": "images/mil-ranks/officer/O3.png" },
+          { "name": "Major", "abbr": "Maj", "paygrade": "O-4", "desc": "Squadron commander.", "img": "images/mil-ranks/officer/O4.png" },
+          { "name": "Lieutenant Colonel", "abbr": "Lt Col", "paygrade": "O-5", "desc": "Squadron or group commander.", "img": "images/mil-ranks/officer/O5.png" },
+          { "name": "Colonel", "abbr": "Col", "paygrade": "O-6", "desc": "Delta commander.", "img": "images/mil-ranks/officer/O6.png" },
+          { "name": "Brigadier General", "abbr": "Brig Gen", "paygrade": "O-7", "desc": "One-star general officer.", "img": "images/mil-ranks/officer/O7.png" },
+          { "name": "Major General", "abbr": "Maj Gen", "paygrade": "O-8", "desc": "Two-star general officer.", "img": "images/mil-ranks/officer/O8.png" },
+          { "name": "Lieutenant General", "abbr": "Lt Gen", "paygrade": "O-9", "desc": "Three-star general officer.", "img": "images/mil-ranks/officer/O9.png" },
+          { "name": "General", "abbr": "Gen", "paygrade": "O-10", "desc": "Four-star general officer.", "img": "images/mil-ranks/officer/O10.png" }
+        ]
+      }
+    ]
+  }
+]
